@@ -63,17 +63,67 @@ def make_board(columns=7, rows=7):
     return board
 
 
-def add_items_to_board(columns, rows, items, goal_pos):
-    limit = int(round((columns * rows) ** 0.5, 0))
-    num_of_items = 0
-    items_at = {goal_pos: "GOAL"}
-    while num_of_items < limit:
-        random_x = randint(0, columns - 1)
-        random_y = randint(0, rows - 1)
-        if (random_x, random_y) not in items_at:
-            items_at[(random_x, random_y)] = random.choice(items)
-            num_of_items += 1
-    return items_at
+def has_adjacent_item(position, items_locations):
+    column, row = position
+    adjacent_positions = [
+        (column, row-1),
+        (column+1, row),
+        (column, row+1),
+        (column-1, row)
+    ]
+    
+    for adj_pos in adjacent_positions:
+        if adj_pos in items_locations:
+            return True
+    return False
+
+
+def get_tier_positions(tier):
+    """Get all board positions for a specific tier."""
+    tier_positions = []
+    for column in range(7):
+        for row in range(7):
+            if determine_tier(column, row) == tier:
+                if tier == 0 and column == 0 and row == 6:
+                    continue
+                tier_positions.append((column, row))
+    return tier_positions
+
+
+def place_tier_items(tier_positions, item_name, item_quantity, items_locations):
+    items_placed = 0
+    attempts = 0
+    max_attempts = 69
+    
+    while items_placed < item_quantity and attempts < max_attempts and tier_positions:
+        position = random.choice(tier_positions)
+        
+        if not has_adjacent_item(position, items_locations):
+            items_locations[position] = item_name
+            tier_positions.remove(position)
+            items_placed += 1
+        
+        attempts += 1
+
+
+def add_items_to_board():
+    items_by_tier = {
+        0: {"pen and paper": 1},
+        1: {"maths textbook": 5},
+        2: {"manual of logarithms and roots": 4},
+        3: {"calculator": 3}
+    }
+    
+    items_locations = {}
+    
+    for tier in range(4):
+        tier_positions = get_tier_positions(tier)
+        tier_items = items_by_tier[tier]
+        
+        for item_name, item_quantity in tier_items.items():
+            place_tier_items(tier_positions, item_name, item_quantity, items_locations)
+    
+    return items_locations
 
 
 def make_character():
@@ -308,7 +358,7 @@ def move_character(character, direction):
     character['y_position'] += move[1]
 
 
-def print_progression_board(board):
+def print_progression_board(board, items_locations):
     colors = {
         "blue": "\033[44m",
         "green": "\033[42m",
@@ -322,18 +372,23 @@ def print_progression_board(board):
     print("  " + " ".join(str(i) for i in range(7)))
     print("  " + "-" * 13)
     
-    for y in range(7):
-        row = f"{y}|"
-        for x in range(7):
-            tier_color = colors[board[(x, y)]["tier_color"]]
-            can_progress = "Y" if board[(x, y)]["can_progress"] else "N"
-            row += f"{tier_color}{can_progress}{colors['reset']} "
-        print(row)
+    for row in range(7):
+        row_str = f"{row}|"
+        for column in range(7):
+            bg_color = colors[board[(column, row)]["tier_color"]]
+            if (column, row) in items_locations:
+                item = items_locations[(column, row)]
+                row_str += f"{bg_color}{item[0].upper()}{colors['reset']} "
+            else:
+                can_progress = "Y" if board[(column, row)]["can_progress"] else "N"
+                row_str += f"{bg_color}{can_progress}{colors['reset']} "
+        print(row_str)
 
 
 def game():
     board = make_board()
-    print_progression_board(board)
+    items_locations = add_items_to_board()
+    print_progression_board(board, items_locations)
     character = make_character()
     while True:
         print_board(board, (character["x_position"], character["y_position"]))
