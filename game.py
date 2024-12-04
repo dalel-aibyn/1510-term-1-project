@@ -504,11 +504,11 @@ def generate_answer_range(correct_answer):
         return None
     elif isinstance(correct_answer, tuple):
         chosen_solution = random.choice(correct_answer)
-        delta = max(abs(chosen_solution) * 0.125, 5)
+        delta = min(max(abs(chosen_solution) * 0.125, 5), 1250)
         anchor = random.uniform(chosen_solution - delta, chosen_solution + delta)
         return anchor - delta * 2, anchor + delta * 2
     else:
-        delta = max(abs(correct_answer) * 0.125, 5)
+        delta = min(max(abs(correct_answer) * 0.125, 5), 1250)
         anchor = random.uniform(correct_answer - delta, correct_answer + delta)
         return anchor - delta * 2, anchor + delta * 2
 
