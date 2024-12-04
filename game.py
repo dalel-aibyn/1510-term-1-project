@@ -319,7 +319,6 @@ def math_duel(character, current_area):
         character["mood"] = min(character["max_mood"], character["mood"] + 5)
         return True
     else:
-        print("\nYou have been bested...")
         return False
 
 
@@ -337,6 +336,40 @@ def level_up(character, experience):
         print(f"Damage increased to {character['damage']}!")
 
 
+def is_alive(character):
+    return character["mood"] > 0
+
+
+def is_goal(character):
+    return character["row"] == 6 and character["column"] == 6
+
+
+def recap(character):
+    if is_alive(character):
+        print(f"\nCongratulations, {character['name']}! You've reached the goal!")
+    else:
+        print(f"\n{character['name']}, you've been bested...")
+    
+    print("\nFinal Stats:")
+    print(f"Level: {math.floor(character['level'])}")
+    print(f"Mood: {character['mood']}/{character['max_mood']}")
+    print(f"Damage: {character['damage']}")
+    print(f"Steps taken: {character['steps_taken']}")
+    print(f"Opponents defeated: {character['opponents_bested']}")
+    
+    print("\nItems collected:")
+    collected_items = [item for item, has_item in character["inventory"].items() if has_item]
+    if collected_items:
+        for item in collected_items:
+            print(f"- {item}")
+    else:
+        print("None!")
+    
+    print("\nAreas visited:")
+    for area, visited in character["areas_visited"].items():
+        print(f"- {area}: {'✓' if visited else '✗'}")
+
+
 def game():
     board = make_board()
     items_locations = add_items_to_board()
@@ -349,6 +382,10 @@ def game():
         
         if valid_move:
             move_character(character, valid_move)
+
+            if is_goal(character):
+                break
+
             current_pos = (character["column"], character["row"])
             current_location = board[current_pos]
             current_area = current_location["tier_name"]
@@ -364,13 +401,16 @@ def game():
             else:
                 character["opponent_encounter_cooldown"] -= 1
 
+            if not is_alive(character):
+                break
+
             handle_item_pickup(character, items_locations, current_pos)
         else:
             print("Invalid move - out of bounds!")
         print(character)
         sleep(0.5)
 
-
+    recap(character)
 def main():
     """
         Drive the program.
