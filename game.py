@@ -3,7 +3,6 @@ AIBYN DALEL
 A01311270
 """
 import random
-from random import randint
 
 
 def determine_tier(column, row):
@@ -66,10 +65,10 @@ def make_board(columns=7, rows=7):
 def has_adjacent_item(position, items_locations):
     column, row = position
     adjacent_positions = [
-        (column, row-1),
-        (column+1, row),
-        (column, row+1),
-        (column-1, row)
+        (column, row - 1),
+        (column + 1, row),
+        (column, row + 1),
+        (column - 1, row)
     ]
     
     for adj_pos in adjacent_positions:
@@ -79,7 +78,6 @@ def has_adjacent_item(position, items_locations):
 
 
 def get_tier_positions(tier):
-    """Get all board positions for a specific tier."""
     tier_positions = []
     for column in range(7):
         for row in range(7):
@@ -129,7 +127,7 @@ def add_items_to_board():
 def make_character():
     name = input("Enter your character's name: ")
     start_column = 0
-    start_row = 0
+    start_row = 6
     start_health = 5
     start_mood = 25
     inventory = {
@@ -170,7 +168,33 @@ def make_character():
     }
 
 
-def print_progression_board(board, items_locations):
+def get_user_choice():
+    valid_inputs = {'n': (-1, 0), 's': (1, 0), 'e': (0, 1), 'w': (0, -1)}
+    while True:
+        choice = input("Enter direction (n/s/e/w): ").lower()
+        if choice in valid_inputs:
+            return valid_inputs[choice]
+        print("Invalid direction. Please enter n, s, e, or w.")
+
+
+def validate_move(board, character, direction):
+    delta_row, delta_column = direction
+    new_row = character["row"] + delta_row
+    new_column = character["column"] + delta_column
+    
+    if 0 <= new_row < board["max_y"] and 0 <= new_column < board["max_x"]:
+        return delta_row, delta_column
+    return False
+
+
+def move_character(character, direction):
+    delta_row, delta_column = direction
+    character["row"] += delta_row
+    character["column"] += delta_column
+    character["steps taken"] += 1
+
+
+def print_board(board, items_locations, character_pos):
     colors = {
         "blue": "\033[44m",
         "green": "\033[42m",
@@ -178,7 +202,8 @@ def print_progression_board(board, items_locations):
         "orange": "\033[48;5;208m",
         "red": "\033[41m",
         "purple": "\033[45m",
-        "reset": "\033[0m"
+        "reset": "\033[0m",
+        "pink": "\033[45m"
     }
     
     print("  " + " ".join(str(i) for i in range(7)))
@@ -187,21 +212,33 @@ def print_progression_board(board, items_locations):
     for row in range(7):
         row_str = f"{row}|"
         for column in range(7):
-            bg_color = colors[board[(column, row)]["tier_color"]]
-            if (column, row) in items_locations:
-                item = items_locations[(column, row)]
-                row_str += f"{bg_color}{item[0].upper()}{colors['reset']} "
+            if (column, row) == character_pos:
+                row_str += f"{colors['pink']}@{colors['reset']} "
             else:
-                can_progress = "Y" if board[(column, row)]["can_progress"] else "N"
-                row_str += f"{bg_color}{can_progress}{colors['reset']} "
+                bg_color = colors[board[(column, row)]["tier_color"]]
+                if (column, row) in items_locations:
+                    item = items_locations[(column, row)]
+                    row_str += f"{bg_color}{item[0].upper()}{colors['reset']} "
+                else:
+                    can_progress = "Y" if board[(column, row)]["can_progress"] else "N"
+                    row_str += f"{bg_color}{can_progress}{colors['reset']} "
         print(row_str)
 
 
 def game():
     board = make_board()
     items_locations = add_items_to_board()
-    print_progression_board(board, items_locations)
     character = make_character()
+    
+    while True:
+        print_board(board, items_locations, (character["column"], character["row"]))
+        direction = get_user_choice()
+        valid_move = validate_move(board, character, direction)
+        
+        if valid_move:
+            move_character(character, valid_move)
+        else:
+            print("Invalid move - out of bounds!")
 
 
 def main():
