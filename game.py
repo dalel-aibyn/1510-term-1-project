@@ -473,10 +473,10 @@ def get_problem(current_area):
     return problem, answer, hint
 
 
-def get_timed_answer(thinking_time, problem=None, has_Calculator=False):
+def get_timed_answer(thinking_time, problem=None, has_calculator=False):
     try:
         end_time = time() + thinking_time
-        if has_Calculator:
+        if has_calculator:
             print(f"Your answer (you have {thinking_time} seconds): ")
             answer = input()
             if time() > end_time:
