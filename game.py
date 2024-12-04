@@ -146,9 +146,9 @@ def make_character():
         "inventory": inventory,
         "areas_visited": areas_visited,
         "opponents_encountered": opponents_encountered,
-        "opponents bested": 0,
-        "steps taken": 0,
-        "time given to solve": 5,
+        "opponents_bested": 0,
+        "steps_taken": 0,
+        "time_given_to_solve": 5,
         "level": 0.0,
         "opponent_encounter_cooldown": 1,
         "current_location": "Entrance"
@@ -178,7 +178,7 @@ def move_character(character, direction):
     delta_row, delta_column = direction
     character["row"] += delta_row
     character["column"] += delta_column
-    character["steps taken"] += 1
+    character["steps_taken"] += 1
 
 
 def print_board(board, items_locations, character_pos):
@@ -216,7 +216,18 @@ def handle_item_pickup(character, items_locations, position):
         if not character["inventory"][item]:
             character["inventory"][item] = True
             del items_locations[position]
-            print(f"\nYou found a \"{item}\"! Added to inventory.")
+            print(f"\nYou've found a \"{item}\"! Added to inventory.")
+
+            if item == "pen and paper":
+                character["time given to solve"] = 10
+                print("Your time to solve problems has increased to 10 seconds!")
+            elif item == "maths textbook":
+                print("You will now get hints on how to solve the problem!")
+            elif item == "manual of logarithms and roots":
+                print("You will now see the range within which the correct answer involving those lies!")
+            elif item == "calculator":
+                print("Type in the problem instead of solving it!")
+
         else:
             print(f"\nYou already have a \"{item}\" in your inventory.")
 
