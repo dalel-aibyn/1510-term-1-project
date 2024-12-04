@@ -223,11 +223,11 @@ def handle_item_pickup(character, items_locations, position):
 
             if item == "pen and paper":
                 character["time given to solve"] = 10
-                print("Your time to solve problems has increased to 10 seconds!")
+                print("Your time to solve problems has increased from 8 seconds to 16 seconds!")
             elif item == "maths textbook":
                 print("You will now get hints on how to solve the problem!")
             elif item == "manual of logarithms and roots":
-                print("You will now see the range within which the correct answer involving those lies!")
+                print("You will now see the range within which the correct answer lies!")
             elif item == "calculator":
                 print("Type in the problem instead of solving it!")
 
@@ -638,7 +638,7 @@ def game():
             handle_item_pickup(character, items_locations, current_pos)
         else:
             print("Invalid move - out of bounds!")
-        sleep(0.5)
+        sleep(2)
     recap(character)
 
 
