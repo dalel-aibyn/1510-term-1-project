@@ -400,7 +400,7 @@ def generate_term3(term1_value, term2_value, has_solution):
     if has_solution:
         value = 0 - term1_value - term2_value
         sign = "+" if value == abs(value) else "-"
-        term3_string = f"{sign} {abs(value)}"
+        term3_string = f"{sign} {abs(value):.2f}"
         return [value, term3_string]
     else:
         return [float('inf'), "+ 69^420"]  # this will like never happen, but just in case
@@ -510,7 +510,7 @@ def math_duel(character, current_area):
         print(f"\nOpponent mood: {opponent_stats['mood']}")
         print(f"Your Mood: {character['mood']}")
         problem, correct_answer = get_problem(current_area)
-        thinking_time = 10 if character["inventory"]["pen and paper"] else 5
+        thinking_time = 16 if character["inventory"]["pen and paper"] else 8
 
         print(f"\nProblem: {problem}")
         print(f"You have {thinking_time} seconds to answer...")
@@ -521,7 +521,8 @@ def math_duel(character, current_area):
         handle_duel_result(character, player_answer, opponent_guess, correct_answer, opponent_stats)
 
     if opponent_stats["mood"] <= 0:
-        print("\nYou won the duel! You replenish 5 mood.")
+        print(f"\nYou won the duel! You replenish 5 mood. \nYour mood is currently at "
+              f"{character['mood']}/{character["max_mood"]}")
         character["opponents_bested"] += 1
         level_up(character, opponent_stats["experience"])
         character["mood"] = min(character["max_mood"], character["mood"] + 5)
@@ -633,9 +634,7 @@ def game():
             handle_item_pickup(character, items_locations, current_pos)
         else:
             print("Invalid move - out of bounds!")
-        print(character)
         sleep(0.5)
-
     recap(character)
 
 
