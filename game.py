@@ -99,7 +99,7 @@ def add_items_to_board():
     items_by_tier = {
         0: {"Pen and paper": 1},
         1: {"Textbook": 5},
-        2: {"Manual": 4},
+        2: {"Manual": 3},
         3: {"Calculator": 2}
     }
 
@@ -110,6 +110,8 @@ def add_items_to_board():
         tier_items = items_by_tier[tier]
 
         for item_name, item_quantity in tier_items.items():
+            if item_name == "Manual":
+                tier_positions = [(x, y) for x, y in tier_positions if y != 4]
             if item_name == "Calculator":
                 tier_positions = [(x, y) for x, y in tier_positions if y != 5]
             
