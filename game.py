@@ -5,6 +5,8 @@ A01311270
 import random
 from random import randint
 from time import sleep
+from time import time
+import math
 
 
 def determine_tier(column, row):
@@ -148,7 +150,6 @@ def make_character():
         "opponents_encountered": opponents_encountered,
         "opponents_bested": 0,
         "steps_taken": 0,
-        "time_given_to_solve": 5,
         "level": 0.0,
         "opponent_encounter_cooldown": 1,
         "current_location": "Entrance"
@@ -232,6 +233,94 @@ def handle_item_pickup(character, items_locations, position):
             print(f"\nYou already have a \"{item}\" in your inventory.")
 
 
+def get_opponent_stats(area):
+    return {
+        "Entrance": {"mood": 6, "damage": 2, "experience": 0.1},
+        "Arithmetics": {"mood": 9, "damage": 3, "experience": 0.2},
+        "Algebra": {"mood": 12, "damage": 4, "experience": 0.5},
+        "Calculus": {"mood": 15, "damage": 5, "experience": 1},
+        "Number Theory": {"mood": 20, "damage": 6, "experience": 2}
+    }[area]
+
+
+def get_problem():
+    # Placeholder for now
+    return "1 + 1", 2
+
+
+def get_timed_answer(thinking_time):
+    end_time = time() + thinking_time
+    
+    try:
+        answer = input(f"Your answer (you have {thinking_time} seconds): ")
+        if time() > end_time:
+            return None
+        return float(answer)
+    except ValueError:
+        return "critical"
+
+
+def generate_opponent_guess(correct_answer):
+    return random.uniform(correct_answer * 0.9, correct_answer * 1.1)
+
+
+def handle_duel_result(character, player_answer, opponent_guess, correct_answer, opponent_stats):
+    if player_answer == "critical":
+        critical_damage = opponent_stats["damage"] * 2
+        print(f"Invalid input! Opponent deals CRITICAL damage! (-{critical_damage} mood)")
+        character["mood"] -= critical_damage
+        return False
+    elif player_answer is None:
+        print(f"Opponent guessed: {opponent_guess:.2f}")
+        print(f"You didn't answer in time! You take damage! (-{opponent_stats['damage']} mood)")
+        character["mood"] -= opponent_stats["damage"]
+        return False
+    
+    player_difference = abs(player_answer - correct_answer)
+    opponent_difference = abs(opponent_guess - correct_answer)
+    
+    print(f"\nOpponent guessed: {opponent_guess:.2f}")
+    
+    if player_difference < opponent_difference:
+        print(f"You were closer! Opponent takes damage! (-{opponent_stats['damage']} mood)")
+        opponent_stats["mood"] -= 3 + math.floor(character["level"])
+        return True
+    else:
+        print(f"Opponent was closer! You take damage! (-{opponent_stats['damage']} mood)")
+        character["mood"] -= opponent_stats["damage"]
+        return False
+
+
+def math_duel(character, current_area):
+    print("MATH DUEL")
+    
+    opponent_stats = get_opponent_stats(current_area)
+    
+    while opponent_stats["mood"] > 0 and character["mood"] > 0:
+        print(f"\nOpponent mood: {opponent_stats['mood']}")
+        print(f"Your Mood: {character['mood']}")
+        problem, correct_answer = get_problem()
+        thinking_time = 10 if character["inventory"]["pen and paper"] else 5
+        
+        print(f"\nProblem: {problem}")
+        print(f"You have {thinking_time} seconds to answer...")
+        
+        player_answer = get_timed_answer(thinking_time)
+        opponent_guess = generate_opponent_guess(correct_answer)
+        
+        handle_duel_result(character, player_answer, opponent_guess, correct_answer, opponent_stats)
+    
+    if opponent_stats["mood"] <= 0:
+        print("\nYou won the duel! You replenish 5 mood.")
+        character["opponents_bested"] += 1
+        character["mood"] = min(25, character["mood"] + 5)
+        character["level"] += opponent_stats["experience"]
+        return True
+    else:
+        print("\nYou have been bested...")
+        return False
+
+
 def game():
     board = make_board()
     items_locations = add_items_to_board()
@@ -248,18 +337,18 @@ def game():
             current_location = board[current_pos]
             current_area = current_location["tier_name"]
 
-            handle_item_pickup(character, items_locations, current_pos)
-
             if not character["areas_visited"][current_area]:
                 character["opponent_encounter_cooldown"] = 1
                 character["areas_visited"][current_area] = True
             
             if randint(1, character["opponent_encounter_cooldown"]) == 1:
-                print("hi")
+                math_duel(character, current_area)
                 character["opponents_encountered"][current_area] = True
                 character["opponent_encounter_cooldown"] = 5
             else:
                 character["opponent_encounter_cooldown"] -= 1
+
+            handle_item_pickup(character, items_locations, current_pos)
         else:
             print("Invalid move - out of bounds!")
         print(character)
