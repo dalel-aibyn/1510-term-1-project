@@ -88,6 +88,22 @@ def make_character():
         "manual of logarithms and roots": 0,
         "calculator": 0
     }
+    areas_visited = {
+        "Entrance": True,
+        "Arithmetics": False,
+        "Algebra": False,
+        "Calculus": False,
+        "Number Theory": False,
+        "Goal": False
+    }
+    opponents_encountered = {
+        "Entrance": False,
+        "Arithmetics": False,
+        "Algebra": False,
+        "Calculus": False,
+        "Number Theory": False,
+        "Goal": False
+    }
     
     return {
         "name": name,
@@ -96,6 +112,8 @@ def make_character():
         "Current HP": start_health,
         "mood": start_mood,
         "inventory": inventory,
+        "areas_visited": areas_visited,
+        "opponents_encountered": opponents_encountered,
         "opponents bested": 0,
         "steps taken": 0,
         "time given to solve": 5
