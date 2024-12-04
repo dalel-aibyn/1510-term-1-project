@@ -259,9 +259,32 @@ def addition_problem():
     return problem, answer
 
 
+def multiplication_problem():
+    num1 = randint(1, 1000)
+    num2 = randint(1, 1000)
+    num3 = randint(1, 1000)
+    
+    problem = f"{num1} * {num2} * {num3} = ?"
+    answer = num1 * num2 * num3
+    
+    return problem, answer
+
+
+def easy_power_problem():
+    base = randint(2, 10)
+    power = randint(2, 10)
+    
+    problem = f"{base}^{power} = ?"
+    answer = base ** power
+    
+    return problem, answer
+
+
 def get_problem(current_area):
     if current_area == "Entrance":
         return addition_problem()
+    elif current_area == "Arithmetics":
+        return random.choice([multiplication_problem, easy_power_problem])()
     return "1 + 1", 2  # Placeholder for other cases
 
 
@@ -316,7 +339,7 @@ def math_duel(character, current_area):
     while opponent_stats["mood"] > 0 and character["mood"] > 0:
         print(f"\nOpponent mood: {opponent_stats['mood']}")
         print(f"Your Mood: {character['mood']}")
-        problem, correct_answer = get_problem(current_area)  # Pass current_area here
+        problem, correct_answer = get_problem(current_area)
         thinking_time = 10 if character["inventory"]["pen and paper"] else 5
         
         print(f"\nProblem: {problem}")
