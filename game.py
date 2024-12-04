@@ -19,7 +19,7 @@ def make_board(columns, rows):
     :param rows: The number of rows in the board
     :param columns: The number of columns in the board
     :precondition: rows and columns must be positive integers
-    :postcondition: Create a board with specified rows and columns, placing items randomly
+    :post condition: Create a board with specified rows and columns, placing items randomly
                     with goal in the bottom right corner
     :return: A dictionary representing the board
 
@@ -54,7 +54,7 @@ def add_items_to_board(columns, rows, items, goal_pos):
     :param items: A list of items to place on the board
     :param goal_pos: A tuple representing the coordinates of the goal position
     :precondition: rows and columns must be positive integers, items must be a list of strings
-    :postcondition: Create a dictionary with items placed on the board
+    :post condition: Create a dictionary with items placed on the board
     :return: A dictionary with positions as keys and items as values
 
     >>> items_are_here = add_items_to_board(2, 2, ['rock', 'paper', 'scissors'], (1, 1))
@@ -96,9 +96,10 @@ def make_character():
     start_x = 0
     start_y = 0
     start_health = 5
-    inventory = [] # I can make this a dictionary instead where items are keys and values are how many of them you have.
-                   # Maybe in the term project, I'm too lazy to change this now
-                   # Also, you don't do anything with the items you've collected.
+    inventory = []
+    # I can make this a dictionary instead where items are keys and values are how many of them you have
+    # Maybe in the term project, I'm too lazy to change this now
+    # Also, you don't do anything with the items you've collected.
     return {"x_position": start_x, "y_position": start_y, "Current HP": start_health, "inventory": inventory}
 
 
@@ -112,7 +113,7 @@ def print_board(board, player_pos):
     :param player_pos: Player's current position on the board
     :precondition: board must be a dictionary with valid board structure
                    player_pos must be within the board's dimensions
-    :postcondition: Print the current state of the board
+    :post condition: Print the current state of the board
     :return: None
     """
     slot_wideness = 5
@@ -142,7 +143,7 @@ def print_info_row(board, player_pos, slot_wideness, row):
                    player_pos must be within the board's dimensions
                    slot_wideness must be a positive integer bigger than 2
                    row must be a positive integer
-    :postcondition: Print the current state of the specified row
+    :post condition: Print the current state of the specified row
     :return: None
     """
     yellow = "\033[33m"
@@ -184,7 +185,7 @@ def print_inbetween_info(board, player_pos, slot_wideness, row):
                    player_pos must be within the board's dimensions
                    slot_wideness must be a positive integer bigger than 2
                    row must be a positive integer
-    :postcondition: Print the line between rows
+    :post condition: Print the line between rows
     :return: None
     """
     yellow = "\033[33m"
@@ -196,7 +197,7 @@ def print_inbetween_info(board, player_pos, slot_wideness, row):
         if (column, row + 1) == player_pos or (column, row) == player_pos:
             slot_divider = f'{yellow}#'
         if (column + 1, row) == player_pos or (column, row) == player_pos or (column, row + 1) == player_pos or (
-        column + 1, row + 1) == player_pos:
+                column + 1, row + 1) == player_pos:
             slot_corner = f'{yellow}#'
         line += slot_divider * slot_wideness + slot_corner
         if column == board['max_x'] - 1:
@@ -215,7 +216,7 @@ def describe_situation(goal_pos, character):
     :precondition: goal_pos is a tuple of coordinates of the goal
                    character is a dictionary with 'x_position', 'y_position', 'Current HP' and 'inventory' keys
                    Value of 'Current HP' key must be a positive integer
-    :postcondition: Print the current situation of the character
+    :post condition: Print the current situation of the character
     :return: None
 
     >>> doctest_character = make_character()
@@ -252,7 +253,7 @@ def distance_to_goal(goal_pos, character):
     :param character: Information about the character
     :precondition: goal_pos is a tuple of coordinates of the goal
                    character is a dictionary with 'x_position' and 'y_position' keys
-    :postcondition: Correctly calculate the number of steps between the character's position and the goal
+    :post condition: Correctly calculate the number of steps between the character's position and the goal
     :return: Number of steps away from the goal
 
     >>> doctest_character = make_character()
@@ -288,7 +289,7 @@ def guessing_game(character):
 
     :param character: Information about the character
     :precondition: Character is a dictionary with 'Current HP' key
-    :postcondition: Correctly update character's health based on the player's guess
+    :post condition: Correctly update character's health based on the player's guess
     :return: None
     """
     valid_guesses = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5}
@@ -313,7 +314,7 @@ def is_alive(character):
 
     :param character: Information about the character
     :precondition: Character is a dictionary with 'Current HP' key
-    :postcondition: Correctly determine whether the character is alive or not
+    :post condition: Correctly determine whether the character is alive or not
     :return: True if alive, False otherwise
 
     >>> doctest_character = make_character()
@@ -334,7 +335,7 @@ def check_if_goal_attained(goal_pos, character):
     :param character: Information about the character
     :precondition: goal_pos is a tuple of coordinates of the goal
                    character is a dictionary with 'x_position' and 'y_position' keys
-    :postcondition: Correctly determines whether the character has reached the goal or not
+    :post condition: Correctly determines whether the character has reached the goal or not
     :return: True if the character has reached the goal, False otherwise
 
     >>> doctest_character = make_character()
@@ -355,7 +356,7 @@ def is_on_item_space(board, character):
     :param character: Information about the character
     :precondition: board must be a dictionary with valid board structure
                    character is a dictionary with 'x_position' and 'y_position' keys
-    :postcondition: Correctly determines if the character is on an item space or not
+    :post condition: Correctly determines if the character is on an item space or not
     :return: True if the character is on a space containing an item, False otherwise
     >>> doctest_character = make_character()
     >>> doctest_board = {(0,0): '--', (0,1): '--', (1,0): 'rock', (1,1): 'GOAL'}
@@ -385,8 +386,8 @@ def action_with_item(board, character):
     :param board: The game board
     :param character: Information about the character
     :precondition: board must be a dictionary with valid board structure,
-                   character is a dictionary with 'x_position', 'y_position' and 'inventory' keys.
-    :postcondition: Correctly update the board and character's inventory depending on user's decision.'
+                   character is a dictionary with 'x_position', 'y_position' and 'inventory' keys
+    :post condition: Correctly update the board and character's inventory depending on user's decision
     :return: None
     """
     item = board[(character['x_position'], character['y_position'])]
@@ -406,7 +407,7 @@ def item_decision(board, character, item):
     :precondition: board must be a dictionary with valid board structure
                    character is a dictionary with 'x_position', 'y_position' and 'inventory' keys
                    item must be a string
-    :postcondition: Correctly update the board and character's inventory depending on user's decision
+    :post condition: Correctly update the board and character's inventory depending on user's decision
     :return: True if the decision is made, False otherwise
     """
     print(f'Would you like to take {item} with you? (y/n):')
@@ -444,7 +445,7 @@ def validate_move(board, character, direction):
     :precondition: board must be a dictionary with valid board structure
                    character is a dictionary with 'x_position' and 'y_position' keys
                    direction must be a string
-    :postcondition: Correctly determine whether the move is valid or not
+    :post condition: Correctly determine whether the move is valid or not
     :return: The direction as a string if the move is valid, False otherwise
     """
     modified_direction = direction.lower().strip()
@@ -476,7 +477,7 @@ def move_doesnt_go_off_board(board, character, modified_direction):
     :precondition: board must be a dictionary with valid board structure
                    character is a dictionary with 'x_position' and 'y_position' keys
                    modified_direction must be up, down, left or right
-    :postcondition: Correctly determine whether the move goes off the board or not
+    :post condition: Correctly determine whether the move goes off the board or not
     :return: True if the move stays on board, False otherwise
 
     >>> doctest_character = make_character()
@@ -506,7 +507,7 @@ def move_character(character, direction):
     :precondition: character is a dictionary with 'x_position' and 'y_position' keys
                    modified_direction must be 'up', 'down', 'left' or 'right'
                        and must be a valid direction to move in (stay on board)
-    :postcondition: Correctly change characters coordinates
+    :post condition: Correctly change characters coordinates
     :return: None
 
     >>> doctest_character = make_character()
