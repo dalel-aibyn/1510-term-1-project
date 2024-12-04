@@ -3,6 +3,8 @@ AIBYN DALEL
 A01311270
 """
 import random
+from random import randint
+from time import sleep
 
 
 def determine_tier(column, row):
@@ -126,10 +128,6 @@ def add_items_to_board():
 
 def make_character():
     name = input("Enter your character's name: ")
-    start_column = 0
-    start_row = 6
-    start_health = 5
-    start_mood = 25
     inventory = {
         "pen and paper": 0,
         "maths textbook": 0,
@@ -149,26 +147,24 @@ def make_character():
         "Arithmetics": False,
         "Algebra": False,
         "Calculus": False,
-        "Number Theory": False,
-        "Goal": False
+        "Number Theory": False
     }
-    highest_tier_defeated = -1
-    level = 0.0
 
     return {
         "name": name,
-        "column": start_column,
-        "row": start_row,
-        "Current HP": start_health,
-        "mood": start_mood,
+        "column": 0,
+        "row": 6,
+        "Current HP": 5,
+        "mood": 25,
         "inventory": inventory,
         "areas_visited": areas_visited,
         "opponents_encountered": opponents_encountered,
         "opponents bested": 0,
         "steps taken": 0,
         "time given to solve": 5,
-        "highest_tier_defeated": highest_tier_defeated,
-        "level": level
+        "level": 0.0,
+        "opponent_encounter_cooldown": 5,
+        "current_location": "Entrance"
     }
 
 
@@ -241,8 +237,23 @@ def game():
         
         if valid_move:
             move_character(character, valid_move)
+            current_location = board[(character["column"], character["row"])]
+            current_area = current_location["tier_name"]
+            
+            if not character["areas_visited"][current_area]:
+                character["opponent_encounter_cooldown"] = 1
+                character["areas_visited"][current_area] = True
+            
+            if randint(1, character["opponent_encounter_cooldown"]) == 1:
+                print("hi")
+                character["opponents_encountered"][current_area] = True
+                character["opponent_encounter_cooldown"] = 5
+            else:
+                character["opponent_encounter_cooldown"] -= 1
         else:
             print("Invalid move - out of bounds!")
+        print(character)
+        sleep(0.5)
 
 
 def main():
