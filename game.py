@@ -103,9 +103,9 @@ def add_items_to_board():
         3: {"calculator": 3}
     }
     
-    items_locations = {}
+    items_locations = {(0, 5): "pen and paper"}
     
-    for tier in range(4):
+    for tier in range(1, 4):
         tier_positions = get_tier_positions(tier)
         tier_items = items_by_tier[tier]
         
@@ -370,6 +370,23 @@ def recap(character):
         print(f"- {area}: {'✓' if visited else '✗'}")
 
 
+def get_encounter_probability(character, current_area):
+    area_difficulty = {
+        "Entrance": 1,
+        "Arithmetics": 2,
+        "Algebra": 3,
+        "Calculus": 4,
+        "Number Theory": 5
+    }
+    
+    difficulty = area_difficulty[current_area]
+    level = math.floor(character["level"])
+    
+    probability = character["opponent_encounter_cooldown"] + (level // 2) - (difficulty // 2)
+    
+    return max(1, min(5, probability))
+
+
 def game():
     board = make_board()
     items_locations = add_items_to_board()
@@ -394,7 +411,8 @@ def game():
                 character["opponent_encounter_cooldown"] = 1
                 character["areas_visited"][current_area] = True
             
-            if randint(1, character["opponent_encounter_cooldown"]) == 1:
+            encounter_chance = get_encounter_probability(character, current_area)
+            if randint(1, encounter_chance) == 1:
                 math_duel(character, current_area)
                 character["opponents_encountered"][current_area] = True
                 character["opponent_encounter_cooldown"] = 5
@@ -411,6 +429,8 @@ def game():
         sleep(0.5)
 
     recap(character)
+
+
 def main():
     """
         Drive the program.
