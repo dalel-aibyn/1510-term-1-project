@@ -356,29 +356,74 @@ def cubic_problem():
     return problem, (solution1, solution2, solution3)
 
 
-def solve_extreme_diophantine():
-    pass
+def factorial_term(answer):
+    term = randint(1, 10)
+
+    try:
+        value = term * math.gamma(answer + 1)
+    except ValueError:
+        value = float('inf')
+    
+    term_string = "x!" if term == 1 else f"{term}x!"
+    return [value, term_string]
+
+
+def x_raised_to_power_term(answer):
+    term1 = randint(1, 10)
+    term2 = randint(2, 10)
+
+    value = term1 * (answer ** term2)
+
+    term_string = f"x^{term2}" if term1 == 1 else f"{term1}x^{term2}"
+    return [value, term_string]
+
+
+def term_raised_to_x_term(answer):
+    term = randint(2, 10)
+    
+    value = term ** answer
+
+    term_string = f"{term}^x"
+    return [value, term_string]
+
+
+def simple_term(answer):
+    term = randint(1, 10)
+
+    value = term * answer
+
+    term_string = "x" if term == 1 else f"{term}x"
+    return [value, term_string]
+
+
+def generate_term3(term1_value, term2_value, has_solution):
+    if has_solution:
+        value = 0 - term1_value - term2_value
+        sign = "+" if value == abs(value) else "-"
+        term3_string = f"{sign} {abs(value)}"
+        return [value, term3_string]
+    else:
+        return [float('inf'), "+ 69^420"]  # this will like never happen, but just in case
 
 
 def extreme_diophantine_problem():
-    terms = [
-        lambda: f"{randint(3, 10)}*x",
-        lambda: f"x^{randint(3, 5)}",
-        lambda: f"{randint(3, 5)}^x",
-        lambda: "x!"
-    ]
+    answer = random.uniform(-10, 10)
+    terms = [factorial_term(answer), x_raised_to_power_term(answer), term_raised_to_x_term(answer), simple_term(answer)]
+    signs = ("+", "-")
 
-    term_funcs = random.sample(terms, 2)
-    term_a = term_funcs[0]()
-    term_b = term_funcs[1]()
+    has_solution = False
+    term1, term2 = random.sample(terms, 2)
+    if term1[0] != float('inf') and term2[0] != float('inf'):
+        has_solution = True
 
-    c = randint(1, 50)
-    operator = random.choice(["+", "-"])
+    sign = random.choice(signs)
+    if sign == "-":
+        term2[1] *= -1
 
-    problem = f"{term_a} {operator} {term_b} = {c}"
-    # answer = solve_extreme_diophantine(problem)
+    term3 = generate_term3(term1[0], term2[0], has_solution)
 
-    # return problem, answer
+    problem = f"{term1[1]} {sign} {term2[1]} {term3[1]} = 0"
+    return problem, answer if has_solution else None  # on a rare occasion that the problem is unsolvable
 
 
 def get_problem(current_area):
@@ -407,7 +452,9 @@ def get_timed_answer(thinking_time):
 
 
 def generate_opponent_guess(correct_answer):
-    if isinstance(correct_answer, tuple):
+    if correct_answer is None:
+        return None
+    elif isinstance(correct_answer, tuple):
         chosen_solution = random.choice(correct_answer)
         return random.uniform(chosen_solution * 0.9, chosen_solution * 1.1)
     else:
@@ -429,7 +476,7 @@ def handle_duel_result(character, player_answer, opponent_guess, correct_answer,
     # For unsolvable problems
     if correct_answer is None:
         print("\nThe problem was particularly challenging!")
-        print(f"You've provided a valid answer! Opponent takes damage! (-{opponent_stats['damage']} mood)")
+        print(f"You've provided a valid answer! Opponent takes damage! (-{character['damage']} mood)")
         opponent_stats["mood"] -= character["damage"]
         return True
 
@@ -445,7 +492,7 @@ def handle_duel_result(character, player_answer, opponent_guess, correct_answer,
     print(f"\nOpponent guessed: {opponent_guess:.2f}")
 
     if player_difference < opponent_difference:
-        print(f"You were closer! Opponent takes damage! (-{opponent_stats['damage']} mood)")
+        print(f"You were closer! Opponent takes damage! (-{character['damage']} mood)")
         opponent_stats["mood"] -= character["damage"]
         return True
     else:
