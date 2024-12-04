@@ -547,7 +547,6 @@ def move_character(character, direction):
 def game():
     rows = 7
     cols = 7
-    mean = int(round((rows * cols) ** 0.5, 0))
     board = make_board(cols, rows)
     character = make_character()
     while True:
