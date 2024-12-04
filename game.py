@@ -323,23 +323,66 @@ def hard_log_problem():
     return problem, answer
 
 
-def easy_quadratic_problem():
-    solution1 = randint(-5, 5)
-    solution2 = randint(-5, 5)
+def quadratic_problem():
+    solution1 = randint(-10, 10)
+    solution2 = randint(-10, 10)
 
-    term_a = random.choice([1, 2])
-    term_b = -term_a * (solution1 + solution2)
-    term_c = term_a * solution1 * solution2
+    term_a = randint(1, 5)
+    term_b = randint(-10, 10)
+    term_c = randint(-25, 25)
 
-    term_b_str = f"+ {term_b}" if term_b >= 0 else f"- {abs(term_b)}"
-    term_c_str = f"+ {term_c}" if term_c >= 0 else f"- {abs(term_c)}"
+    term_b_string = f"+ {term_b}" if term_b >= 0 else f"- {abs(term_b)}"
+    term_c_string = f"+ {term_c}" if term_c >= 0 else f"- {abs(term_c)}"
 
     if term_a == 1:
-        problem = f"x² {term_b_str}x {term_c_str} = 0"
+        problem = f"x² {term_b_string}x {term_c_string} = 0"
     else:
-        problem = f"{term_a}x² {term_b_str}x {term_c_str} = 0"
+        problem = f"{term_a}x² {term_b_string}x {term_c_string} = 0"
 
     return problem, (solution1, solution2)
+
+
+def cubic_problem():
+    solution1 = randint(-10, 10)
+    solution2 = randint(-10, 10)
+    solution3 = randint(-10, 10)
+    
+    term_a = randint(1, 5)
+    term_b = randint(-10, 10)
+    term_c = randint(-10, 10)
+    term_d = randint(-25, 25)
+    
+    term_b_string = f"+ {term_b}" if term_b >= 0 else f"- {abs(term_b)}"
+    term_c_string = f"+ {term_c}" if term_c >= 0 else f"- {abs(term_c)}"
+    term_d_string = f"+ {term_d}" if term_d >= 0 else f"- {abs(term_d)}"
+
+    if term_a == 1:
+        problem = f"x³ {term_b_string}x² {term_c_string}x {term_d_string} = 0"
+    else:
+        problem = f"{term_a}x³ {term_b_string}x² {term_c_string}x {term_d_string} = 0"
+    return problem, (solution1, solution2, solution3)
+
+
+def extreme_diophantine_problem():
+    terms = [
+        lambda: f"{randint(3, 10)}*x",
+        lambda: f"x^{randint(3, 10)}",
+        lambda: f"{randint(3, 10)}^x",
+        lambda: "x!"
+    ]
+
+    term_funcs = random.sample(terms, 2)
+    term_a = term_funcs[0]()
+    term_b = term_funcs[1]()
+    
+    c = randint(1, 50)
+
+    operator = random.choice(["+", "-"])
+    
+    problem = f"{term_a} {operator} {term_b} = {c}"
+    answer = 69  # Placeholder for now
+    
+    return problem, answer
 
 
 def get_problem(current_area):
@@ -350,8 +393,9 @@ def get_problem(current_area):
     elif current_area == "Algebra":
         return random.choice([hard_power_problem, easy_log_problem])()
     elif current_area == "Calculus":
-        return random.choice([hard_log_problem, easy_quadratic_problem])()
-    return "1 + 1", 2  # Placeholder for other cases
+        return random.choice([hard_log_problem, quadratic_problem])()
+    elif current_area == "Number Theory":
+        return random.choice([cubic_problem, extreme_diophantine_problem])()
 
 
 def get_timed_answer(thinking_time):
