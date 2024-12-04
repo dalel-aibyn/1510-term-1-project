@@ -712,6 +712,7 @@ def game():
             if not character["areas_visited"][current_area]:
                 character["opponent_encounter_cooldown"] = 1
                 character["areas_visited"][current_area] = True
+                event_occurred = True
 
             encounter_chance = get_encounter_probability(character, current_area)
             if randint(1, encounter_chance) == 1:
@@ -728,10 +729,7 @@ def game():
             handle_item_pickup(character, items_locations, current_pos, event_occurred)
         else:
             print("Invalid move - out of bounds!")
-        if event_occurred:
-            sleep(2)
-        else:
-            sleep(0.5)
+        sleep(2 if event_occurred else 0.5)
     recap(character)
 
 
