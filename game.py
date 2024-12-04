@@ -152,7 +152,8 @@ def make_character():
         "Number Theory": False,
         "Goal": False
     }
-    
+    highest_tier_defeated = -1
+
     return {
         "name": name,
         "column": start_column,
@@ -164,7 +165,8 @@ def make_character():
         "opponents_encountered": opponents_encountered,
         "opponents bested": 0,
         "steps taken": 0,
-        "time given to solve": 5
+        "time given to solve": 5,
+        "highest_tier_defeated": highest_tier_defeated
     }
 
 
