@@ -97,13 +97,13 @@ def place_tier_items(tier_positions, item_name, item_quantity, items_locations):
 
 def add_items_to_board():
     items_by_tier = {
-        0: {"pen and paper": 1},
-        1: {"maths textbook": 5},
-        2: {"manual of logarithms and roots": 4},
-        3: {"calculator": 3}
+        0: {"Pen and paper": 1},
+        1: {"Textbook": 5},
+        2: {"Manual": 4},
+        3: {"Calculator": 3}
     }
 
-    items_locations = {(0, 5): "pen and paper"}
+    items_locations = {(0, 5): "Pen and paper"}
 
     for tier in range(1, 4):
         tier_positions = get_tier_positions(tier)
@@ -118,10 +118,10 @@ def add_items_to_board():
 def make_character():
     name = input("Enter your character's name: ")
     inventory = {
-        "pen and paper": False,
-        "maths textbook": False,
-        "manual of logarithms and roots": False,
-        "calculator": True
+        "Pen and paper": False,
+        "Textbook": False,
+        "Manual": False,
+        "Calculator": True
     }
     areas_visited = {
         "Entrance": True,
@@ -221,14 +221,14 @@ def handle_item_pickup(character, items_locations, position):
             del items_locations[position]
             print(f"\nYou've found a \"{item}\"! Added to inventory.")
 
-            if item == "pen and paper":
+            if item == "Pen and paper":
                 character["time given to solve"] = 10
                 print("Your time to solve problems has increased from 8 seconds to 16 seconds!")
-            elif item == "maths textbook":
+            elif item == "Textbook":
                 print("You will now get hints on how to solve the problem!")
-            elif item == "manual of logarithms and roots":
+            elif item == "Manual":
                 print("You will now see the range within which the correct answer lies!")
-            elif item == "calculator":
+            elif item == "Calculator":
                 print("Type in the problem instead of solving it!")
 
         else:
@@ -473,10 +473,10 @@ def get_problem(current_area):
     return problem, answer, hint
 
 
-def get_timed_answer(thinking_time, problem=None, has_calculator=False):
+def get_timed_answer(thinking_time, problem=None, has_Calculator=False):
     try:
         end_time = time() + thinking_time
-        if has_calculator:
+        if has_Calculator:
             print(f"Your answer (you have {thinking_time} seconds): ")
             answer = input()
             if time() > end_time:
@@ -579,21 +579,21 @@ def math_duel(character, current_area):
         print(f"\nOpponent mood: {opponent_stats['mood']}")
         print(f"Your Mood: {character['mood']}")
         problem, correct_answer, hint = get_problem(current_area)
-        thinking_time = 16 if character["inventory"]["pen and paper"] else 8
+        thinking_time = 16 if character["inventory"]["Pen and paper"] else 8
 
         print(f"\nProblem: {problem}")
-        if character["inventory"]["maths textbook"]:
+        if character["inventory"]["Textbook"]:
             print(f"{hint}")
-        if character["inventory"]["manual of logarithms and roots"]:
+        if character["inventory"]["Manual"]:
             answer_range = generate_answer_range(correct_answer)
             if answer_range:
                 print(f"The answer lies between {answer_range[0]:.2f} and {answer_range[1]:.2f}")
             else:
                 print("Unable to find the answer range!")
-        if character["inventory"]["calculator"]:
+        if character["inventory"]["Calculator"]:
             print("Type in the problem instead of solving it!")
 
-        player_answer = get_timed_answer(thinking_time, problem, character["inventory"]["calculator"])
+        player_answer = get_timed_answer(thinking_time, problem, character["inventory"]["Calculator"])
         opponent_guess = generate_opponent_guess(correct_answer)
 
         handle_duel_result(character, player_answer, opponent_guess, correct_answer, opponent_stats)
