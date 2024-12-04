@@ -77,30 +77,42 @@ def add_items_to_board(columns, rows, items, goal_pos):
 
 def make_character():
     """
-    Create characters stats.
+    Create character stats.
 
-    The character starts at coordinates (0,0) with 5 HP and an empty inventory.
+    Asks user for the name of the character, then puts the character at coordinates (0,0) with 25 mood points.
+    Character starts off with an empty inventory.
 
     :return: A dictionary representing the character's attributes
 
-    >>> character = make_character()
-    >>> character['x_position']
-    0
-    >>> character['y_position']
-    0
-    >>> character['Current HP']
+    >>> character = make_character()  # doctest:
+    >>> character['mood']  # doctest:
+    25
+    >>> character['time given to solve']  # doctest:
     5
-    >>> character['inventory']
-    []
     """
+    name = input("Enter your character's name: ")
     start_x = 0
     start_y = 0
     start_health = 5
-    inventory = []
-    # I can make this a dictionary instead where items are keys and values are how many of them you have
-    # Maybe in the term project, I'm too lazy to change this now
-    # Also, you don't do anything with the items you've collected.
-    return {"x_position": start_x, "y_position": start_y, "Current HP": start_health, "inventory": inventory}
+    start_mood = 25
+    inventory = {
+        "pen and paper": 0,
+        "maths textbook": 0,
+        "manual of logarithms and roots": 0,
+        "calculator": 0
+    }
+    
+    return {
+        "name": name,
+        "x_position": start_x, 
+        "y_position": start_y,
+        "Current HP": start_health,
+        "mood": start_mood,
+        "inventory": inventory,
+        "opponents bested": 0,
+        "steps taken": 0,
+        "time given to solve": 5
+    }
 
 
 def print_board(board, player_pos):
