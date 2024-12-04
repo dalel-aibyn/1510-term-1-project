@@ -245,9 +245,24 @@ def get_opponent_stats(area):
     }[area]
 
 
-def get_problem():
-    # Placeholder for now
-    return "1 + 1", 2
+def addition_problem():
+    number1 = randint(-10000, 10000)
+    number2 = randint(-10000, 10000)
+    number3 = randint(-10000, 10000)
+
+    sign1 = "+" if number2 == abs(number2) else "-"
+    sign2 = "+" if number3 == abs(number3) else "-"
+    
+    problem = f"{number1} {sign1} {number2} {sign2} {number3} = ?"
+    answer = number1 + number2 + number3
+    
+    return problem, answer
+
+
+def get_problem(current_area):
+    if current_area == "Entrance":
+        return addition_problem()
+    return "1 + 1", 2  # Placeholder for other cases
 
 
 def get_timed_answer(thinking_time):
@@ -301,7 +316,7 @@ def math_duel(character, current_area):
     while opponent_stats["mood"] > 0 and character["mood"] > 0:
         print(f"\nOpponent mood: {opponent_stats['mood']}")
         print(f"Your Mood: {character['mood']}")
-        problem, correct_answer = get_problem()
+        problem, correct_answer = get_problem(current_area)  # Pass current_area here
         thinking_time = 10 if character["inventory"]["pen and paper"] else 5
         
         print(f"\nProblem: {problem}")
