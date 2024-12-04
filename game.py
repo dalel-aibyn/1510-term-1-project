@@ -144,7 +144,9 @@ def make_character():
         "column": 0,
         "row": 6,
         "Current HP": 5,
-        "mood": 25,
+        "mood": 20,
+        "max_mood": 20,
+        "damage": 3,
         "inventory": inventory,
         "areas_visited": areas_visited,
         "opponents_encountered": opponents_encountered,
@@ -237,9 +239,9 @@ def get_opponent_stats(area):
     return {
         "Entrance": {"mood": 6, "damage": 2, "experience": 0.1},
         "Arithmetics": {"mood": 9, "damage": 3, "experience": 0.2},
-        "Algebra": {"mood": 12, "damage": 4, "experience": 0.5},
-        "Calculus": {"mood": 15, "damage": 5, "experience": 1},
-        "Number Theory": {"mood": 20, "damage": 6, "experience": 2}
+        "Algebra": {"mood": 12, "damage": 5, "experience": 0.5},
+        "Calculus": {"mood": 15, "damage": 7, "experience": 1},
+        "Number Theory": {"mood": 20, "damage": 11, "experience": 2}
     }[area]
 
 
@@ -283,7 +285,7 @@ def handle_duel_result(character, player_answer, opponent_guess, correct_answer,
     
     if player_difference < opponent_difference:
         print(f"You were closer! Opponent takes damage! (-{opponent_stats['damage']} mood)")
-        opponent_stats["mood"] -= 3 + math.floor(character["level"])
+        opponent_stats["mood"] -= character["damage"]
         return True
     else:
         print(f"Opponent was closer! You take damage! (-{opponent_stats['damage']} mood)")
@@ -313,12 +315,26 @@ def math_duel(character, current_area):
     if opponent_stats["mood"] <= 0:
         print("\nYou won the duel! You replenish 5 mood.")
         character["opponents_bested"] += 1
-        character["mood"] = min(25, character["mood"] + 5)
-        character["level"] += opponent_stats["experience"]
+        level_up(character, opponent_stats["experience"])
+        character["mood"] = min(character["max_mood"], character["mood"] + 5)
         return True
     else:
         print("\nYou have been bested...")
         return False
+
+
+def level_up(character, experience):
+    old_level = math.floor(character["level"])
+    character["level"] += experience
+    new_level = math.floor(character["level"])
+    
+    if new_level > old_level:
+        levels_gained = new_level - old_level
+        character["max_mood"] = character["max_mood"] + (3 * levels_gained)
+        character["damage"] = character["damage"] + levels_gained
+        print(f"\nLevel Up! You are now level {new_level}!")
+        print(f"Max mood increased to {character['max_mood']}!")
+        print(f"Damage increased to {character['damage']}!")
 
 
 def game():
