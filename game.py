@@ -43,22 +43,9 @@ def make_board(columns=7, rows=7):
     for column in range(columns):
         for row in range(rows):
             tier = determine_tier(column, row)
-            
-            can_progress = False
-            if tier < 5:
-                for delta_row, delta_column in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-                    new_column = column + delta_column
-                    new_row = row + delta_row
-                    if 0 <= new_column < columns and 0 <= new_row < rows:
-                        adj_tier = determine_tier(new_column, new_row)
-                        if adj_tier > tier:
-                            can_progress = True
-                            break
-
             board[(column, row)] = {
                 "tier_name": tiers[tier]["name"],
-                "tier_color": tiers[tier]["color"],
-                "can_progress": can_progress
+                "tier_color": tiers[tier]["color"]
             }
 
     return board
@@ -163,7 +150,7 @@ def make_character():
         "steps taken": 0,
         "time given to solve": 5,
         "level": 0.0,
-        "opponent_encounter_cooldown": 5,
+        "opponent_encounter_cooldown": 1,
         "current_location": "Entrance"
     }
 
@@ -205,24 +192,22 @@ def print_board(board, items_locations, character_pos):
         "reset": "\033[0m",
         "pink": "\033[45m"
     }
-    
-    print("  " + " ".join(str(i) for i in range(7)))
-    print("  " + "-" * 13)
+
+    print("\n     " + "   ".join(str(i) for i in range(7)))
+    print("   +" + "---+" * 7)
     
     for row in range(7):
-        row_str = f"{row}|"
+        row_str = f" {row} |"
         for column in range(7):
             if (column, row) == character_pos:
-                row_str += f"{colors['pink']}@{colors['reset']} "
+                row_str += f"{colors[board[(column, row)]['tier_color']]} @ {colors['reset']}|"
+            elif (column, row) in items_locations:
+                item = items_locations[(column, row)]
+                row_str += f"{colors[board[(column, row)]['tier_color']]} {item[0].upper()} {colors['reset']}|"
             else:
-                bg_color = colors[board[(column, row)]["tier_color"]]
-                if (column, row) in items_locations:
-                    item = items_locations[(column, row)]
-                    row_str += f"{bg_color}{item[0].upper()}{colors['reset']} "
-                else:
-                    can_progress = "Y" if board[(column, row)]["can_progress"] else "N"
-                    row_str += f"{bg_color}{can_progress}{colors['reset']} "
+                row_str += f"{colors[board[(column, row)]['tier_color']]}   {colors['reset']}|"
         print(row_str)
+        print("   +" + "---+" * 7)
 
 
 def game():
