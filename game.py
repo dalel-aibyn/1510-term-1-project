@@ -118,7 +118,7 @@ def add_items_to_board():
 def make_character():
     name = input("Enter your character's name: ")
     inventory = {
-        "pen and paper": False,
+        "pen and paper": True,
         "maths textbook": False,
         "manual of logarithms and roots": True,
         "calculator": False
@@ -490,11 +490,11 @@ def generate_opponent_guess(correct_answer):
         return None
     elif isinstance(correct_answer, tuple):
         chosen_solution = random.choice(correct_answer)
-        delta = max(abs(chosen_solution) * 0.1, 5)
+        delta = max(abs(chosen_solution) * 0.1, 2)
         anchor = random.uniform(chosen_solution - delta, chosen_solution + delta)
         return random.uniform(anchor - delta * 2, anchor + delta * 2)
     else:
-        delta = max(abs(correct_answer) * 0.1, 5)
+        delta = max(abs(correct_answer) * 0.1, 2)
         anchor = random.uniform(correct_answer - delta, correct_answer + delta)
         return random.uniform(anchor - delta * 2, anchor + delta * 2)
     
@@ -504,11 +504,11 @@ def generate_answer_range(correct_answer):
         return None
     elif isinstance(correct_answer, tuple):
         chosen_solution = random.choice(correct_answer)
-        delta = min(max(abs(chosen_solution) * 0.125, 5), 1250)
+        delta = max(abs(chosen_solution) * 0.125, 5)
         anchor = random.uniform(chosen_solution - delta, chosen_solution + delta)
         return anchor - delta * 2, anchor + delta * 2
     else:
-        delta = min(max(abs(correct_answer) * 0.125, 5), 1250)
+        delta = max(abs(correct_answer) * 0.125, 5)
         anchor = random.uniform(correct_answer - delta, correct_answer + delta)
         return anchor - delta * 2, anchor + delta * 2
 
