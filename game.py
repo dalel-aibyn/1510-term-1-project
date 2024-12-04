@@ -120,7 +120,7 @@ def make_character():
     inventory = {
         "pen and paper": False,
         "maths textbook": False,
-        "manual of logarithms and roots": False,
+        "manual of logarithms and roots": True,
         "calculator": False
     }
     areas_visited = {
@@ -418,7 +418,7 @@ def extreme_diophantine_problem():
 
     sign = random.choice(signs)
     if sign == "-":
-        term2[1] *= -1
+        term2[0] *= -1
 
     term3 = generate_term3(term1[0], term2[0], has_solution)
 
@@ -427,7 +427,10 @@ def extreme_diophantine_problem():
 
 
 def get_problem(current_area):
-    problem, answer, hint = False
+    problem = None
+    answer = None
+    hint = None
+    
     if current_area == "Entrance":
         problem, answer = addition_problem()
         hint = "Tip: Add up the significant digits, while keeping track of their signs"
@@ -487,13 +490,27 @@ def generate_opponent_guess(correct_answer):
         return None
     elif isinstance(correct_answer, tuple):
         chosen_solution = random.choice(correct_answer)
-        delta = max(chosen_solution * 0.2, 5)
+        delta = max(abs(chosen_solution) * 0.1, 5)
         anchor = random.uniform(chosen_solution - delta, chosen_solution + delta)
-        return random.uniform(anchor - delta, anchor + delta)
+        return random.uniform(anchor - delta * 2, anchor + delta * 2)
     else:
-        delta = max(correct_answer * 0.2, 5)
+        delta = max(abs(correct_answer) * 0.1, 5)
         anchor = random.uniform(correct_answer - delta, correct_answer + delta)
-        return random.uniform(anchor - delta, anchor + delta)
+        return random.uniform(anchor - delta * 2, anchor + delta * 2)
+    
+
+def generate_answer_range(correct_answer):
+    if correct_answer is None:
+        return None
+    elif isinstance(correct_answer, tuple):
+        chosen_solution = random.choice(correct_answer)
+        delta = max(abs(chosen_solution) * 0.125, 5)
+        anchor = random.uniform(chosen_solution - delta, chosen_solution + delta)
+        return anchor - delta * 2, anchor + delta * 2
+    else:
+        delta = max(abs(correct_answer) * 0.125, 5)
+        anchor = random.uniform(correct_answer - delta, correct_answer + delta)
+        return anchor - delta * 2, anchor + delta * 2
 
 
 def handle_duel_result(character, player_answer, opponent_guess, correct_answer, opponent_stats):
@@ -549,6 +566,12 @@ def math_duel(character, current_area):
         print(f"\nProblem: {problem}")
         if character["inventory"]["maths textbook"]:
             print(f"{hint}")
+        if character["inventory"]["manual of logarithms and roots"]:
+            answer_range = generate_answer_range(correct_answer)
+            if answer_range:
+                print(f"The answer lies between {answer_range[0]:.2f} and {answer_range[1]:.2f}")
+            else:
+                print("Unable to find the answer range!")
         print(f"You have {thinking_time} seconds to answer...")
 
         player_answer = get_timed_answer(thinking_time)
