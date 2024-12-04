@@ -326,19 +326,15 @@ def hard_log_problem():
 def quadratic_problem():
     solution1 = randint(-10, 10)
     solution2 = randint(-10, 10)
-
-    term_a = randint(1, 5)
-    term_b = randint(-10, 10)
-    term_c = randint(-25, 25)
-
+    
+    term_b = -(solution1 + solution2)
+    term_c = solution1 * solution2
+    
     term_b_string = f"+ {term_b}" if term_b >= 0 else f"- {abs(term_b)}"
     term_c_string = f"+ {term_c}" if term_c >= 0 else f"- {abs(term_c)}"
-
-    if term_a == 1:
-        problem = f"x² {term_b_string}x {term_c_string} = 0"
-    else:
-        problem = f"{term_a}x² {term_b_string}x {term_c_string} = 0"
-
+    
+    problem = f"x² {term_b_string}x {term_c_string} = 0"
+    
     return problem, (solution1, solution2)
 
 
@@ -347,19 +343,16 @@ def cubic_problem():
     solution2 = randint(-10, 10)
     solution3 = randint(-10, 10)
     
-    term_a = randint(1, 5)
-    term_b = randint(-10, 10)
-    term_c = randint(-10, 10)
-    term_d = randint(-25, 25)
+    term_b = -(solution1 + solution2 + solution3)
+    term_c = (solution1 * solution2 + solution2 * solution3 + solution1 * solution3)
+    term_d = -(solution1 * solution2 * solution3)
     
     term_b_string = f"+ {term_b}" if term_b >= 0 else f"- {abs(term_b)}"
     term_c_string = f"+ {term_c}" if term_c >= 0 else f"- {abs(term_c)}"
     term_d_string = f"+ {term_d}" if term_d >= 0 else f"- {abs(term_d)}"
-
-    if term_a == 1:
-        problem = f"x³ {term_b_string}x² {term_c_string}x {term_d_string} = 0"
-    else:
-        problem = f"{term_a}x³ {term_b_string}x² {term_c_string}x {term_d_string} = 0"
+    
+    problem = f"x³ {term_b_string}x² {term_c_string}x {term_d_string} = 0"
+    
     return problem, (solution1, solution2, solution3)
 
 
