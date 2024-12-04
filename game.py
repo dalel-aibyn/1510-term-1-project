@@ -253,7 +253,7 @@ def addition_problem():
     sign1 = "+" if number2 == abs(number2) else "-"
     sign2 = "+" if number3 == abs(number3) else "-"
 
-    problem = f"{number1} {sign1} {number2} {sign2} {number3} = ?"
+    problem = f"{number1} {sign1} {abs(number2)} {sign2} {abs(number3)} = ?"
     answer = number1 + number2 + number3
 
     return problem, answer
