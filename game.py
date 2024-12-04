@@ -41,7 +41,7 @@ def make_board(columns=7, rows=7):
         4: {"name": "Number Theory", "color": "red"},
         5: {"name": "Goal", "color": "purple"}
     }
-    
+
     for column in range(columns):
         for row in range(rows):
             tier = determine_tier(column, row)
@@ -61,7 +61,7 @@ def has_adjacent_item(position, items_locations):
         (column, row + 1),
         (column - 1, row)
     ]
-    
+
     for adj_pos in adjacent_positions:
         if adj_pos in items_locations:
             return True
@@ -83,15 +83,15 @@ def place_tier_items(tier_positions, item_name, item_quantity, items_locations):
     items_placed = 0
     attempts = 0
     max_attempts = 69
-    
+
     while items_placed < item_quantity and attempts < max_attempts and tier_positions:
         position = random.choice(tier_positions)
-        
+
         if not has_adjacent_item(position, items_locations):
             items_locations[position] = item_name
             tier_positions.remove(position)
             items_placed += 1
-        
+
         attempts += 1
 
 
@@ -102,16 +102,16 @@ def add_items_to_board():
         2: {"manual of logarithms and roots": 4},
         3: {"calculator": 3}
     }
-    
+
     items_locations = {(0, 5): "pen and paper"}
-    
+
     for tier in range(1, 4):
         tier_positions = get_tier_positions(tier)
         tier_items = items_by_tier[tier]
-        
+
         for item_name, item_quantity in tier_items.items():
             place_tier_items(tier_positions, item_name, item_quantity, items_locations)
-    
+
     return items_locations
 
 
@@ -171,7 +171,7 @@ def validate_move(board, character, direction):
     delta_row, delta_column = direction
     new_row = character["row"] + delta_row
     new_column = character["column"] + delta_column
-    
+
     if 0 <= new_row < board["max_y"] and 0 <= new_column < board["max_x"]:
         return delta_row, delta_column
     return False
@@ -198,7 +198,7 @@ def print_board(board, items_locations, character_pos):
 
     print("\n     " + "   ".join(str(i) for i in range(7)))
     print("   +" + "---+" * 7)
-    
+
     for row in range(7):
         row_str = f" {row} |"
         for column in range(7):
@@ -252,31 +252,31 @@ def addition_problem():
 
     sign1 = "+" if number2 == abs(number2) else "-"
     sign2 = "+" if number3 == abs(number3) else "-"
-    
+
     problem = f"{number1} {sign1} {number2} {sign2} {number3} = ?"
     answer = number1 + number2 + number3
-    
+
     return problem, answer
 
 
 def multiplication_problem():
-    num1 = randint(1, 1000)
-    num2 = randint(1, 1000)
-    num3 = randint(1, 1000)
-    
-    problem = f"{num1} * {num2} * {num3} = ?"
-    answer = num1 * num2 * num3
-    
+    number1 = randint(1, 1000)
+    number2 = randint(1, 1000)
+    number3 = randint(1, 1000)
+
+    problem = f"{number1} * {number2} * {number3} = ?"
+    answer = number1 * number2 * number3
+
     return problem, answer
 
 
 def easy_power_problem():
     base = randint(2, 10)
     power = randint(2, 10)
-    
+
     problem = f"{base}^{power} = ?"
     answer = base ** power
-    
+
     return problem, answer
 
 
@@ -284,10 +284,10 @@ def hard_power_problem():
     base = randint(5, 25)
     power = randint(5, 10)
     multiplier = randint(2, 9)
-    
+
     problem = f"{multiplier} * {base}^{power} = ?"
     answer = multiplier * (base ** power)
-    
+
     return problem, answer
 
 
@@ -295,16 +295,51 @@ def easy_log_problem():
     base = random.choice([2, 3, 5, 10])
     power = randint(3, 8)
     multiplier = randint(2, 5)
-    
+
     number = multiplier * (base ** power)
-    
+
     if base == 10:
         problem = f"log({number}) = ?"
     else:
         problem = f"log{base}({number}) = ?"
     answer = power + math.log(multiplier, base)
-    
+
     return problem, answer
+
+
+def hard_log_problem():
+    base = random.choice([2, 3, 5, 10])
+    power1 = randint(2, 6)
+    power2 = randint(2, 6)
+
+    x = randint(2, 5)
+
+    if base == 10:
+        problem = f"log({x}^{power1}) + log({x}^{power2}) = ?"
+    else:
+        problem = f"log{base}({x}^{power1}) + log{base}({x}^{power2}) = ?"
+    answer = power1 + power2
+
+    return problem, answer
+
+
+def easy_quadratic_problem():
+    solution1 = randint(-5, 5)
+    solution2 = randint(-5, 5)
+
+    term_a = random.choice([1, 2])
+    term_b = -term_a * (solution1 + solution2)
+    term_c = term_a * solution1 * solution2
+
+    term_b_str = f"+ {term_b}" if term_b >= 0 else f"- {abs(term_b)}"
+    term_c_str = f"+ {term_c}" if term_c >= 0 else f"- {abs(term_c)}"
+
+    if term_a == 1:
+        problem = f"x² {term_b_str}x {term_c_str} = 0"
+    else:
+        problem = f"{term_a}x² {term_b_str}x {term_c_str} = 0"
+
+    return problem, (solution1, solution2)
 
 
 def get_problem(current_area):
@@ -314,12 +349,14 @@ def get_problem(current_area):
         return random.choice([multiplication_problem, easy_power_problem])()
     elif current_area == "Algebra":
         return random.choice([hard_power_problem, easy_log_problem])()
+    elif current_area == "Calculus":
+        return random.choice([hard_log_problem, easy_quadratic_problem])()
     return "1 + 1", 2  # Placeholder for other cases
 
 
 def get_timed_answer(thinking_time):
     end_time = time() + thinking_time
-    
+
     try:
         answer = input(f"Your answer (you have {thinking_time} seconds): ")
         if time() > end_time:
@@ -330,7 +367,11 @@ def get_timed_answer(thinking_time):
 
 
 def generate_opponent_guess(correct_answer):
-    return random.uniform(correct_answer * 0.9, correct_answer * 1.1)
+    if isinstance(correct_answer, tuple):
+        chosen_solution = random.choice(correct_answer)
+        return random.uniform(chosen_solution * 0.9, chosen_solution * 1.1)
+    else:
+        return random.uniform(correct_answer * 0.9, correct_answer * 1.1)
 
 
 def handle_duel_result(character, player_answer, opponent_guess, correct_answer, opponent_stats):
@@ -344,12 +385,18 @@ def handle_duel_result(character, player_answer, opponent_guess, correct_answer,
         print(f"You didn't answer in time! You take damage! (-{opponent_stats['damage']} mood)")
         character["mood"] -= opponent_stats["damage"]
         return False
-    
-    player_difference = abs(player_answer - correct_answer)
-    opponent_difference = abs(opponent_guess - correct_answer)
-    
+
+    if isinstance(correct_answer, tuple):
+        player_difference = min(abs(player_answer - correct_answer[0]),
+                                abs(player_answer - correct_answer[1]))
+        opponent_difference = min(abs(opponent_guess - correct_answer[0]),
+                                  abs(opponent_guess - correct_answer[1]))
+    else:
+        player_difference = abs(player_answer - correct_answer)
+        opponent_difference = abs(opponent_guess - correct_answer)
+
     print(f"\nOpponent guessed: {opponent_guess:.2f}")
-    
+
     if player_difference < opponent_difference:
         print(f"You were closer! Opponent takes damage! (-{opponent_stats['damage']} mood)")
         opponent_stats["mood"] -= character["damage"]
@@ -362,23 +409,23 @@ def handle_duel_result(character, player_answer, opponent_guess, correct_answer,
 
 def math_duel(character, current_area):
     print("MATH DUEL")
-    
+
     opponent_stats = get_opponent_stats(current_area)
-    
+
     while opponent_stats["mood"] > 0 and character["mood"] > 0:
         print(f"\nOpponent mood: {opponent_stats['mood']}")
         print(f"Your Mood: {character['mood']}")
         problem, correct_answer = get_problem(current_area)
         thinking_time = 10 if character["inventory"]["pen and paper"] else 5
-        
+
         print(f"\nProblem: {problem}")
         print(f"You have {thinking_time} seconds to answer...")
-        
+
         player_answer = get_timed_answer(thinking_time)
         opponent_guess = generate_opponent_guess(correct_answer)
-        
+
         handle_duel_result(character, player_answer, opponent_guess, correct_answer, opponent_stats)
-    
+
     if opponent_stats["mood"] <= 0:
         print("\nYou won the duel! You replenish 5 mood.")
         character["opponents_bested"] += 1
@@ -393,7 +440,7 @@ def level_up(character, experience):
     old_level = math.floor(character["level"])
     character["level"] += experience
     new_level = math.floor(character["level"])
-    
+
     if new_level > old_level:
         levels_gained = new_level - old_level
         character["max_mood"] = character["max_mood"] + (3 * levels_gained)
@@ -416,14 +463,14 @@ def recap(character):
         print(f"\nCongratulations, {character['name']}! You've reached the goal!")
     else:
         print(f"\n{character['name']}, you've been bested...")
-    
+
     print("\nFinal Stats:")
     print(f"Level: {math.floor(character['level'])}")
     print(f"Mood: {character['mood']}/{character['max_mood']}")
     print(f"Damage: {character['damage']}")
     print(f"Steps taken: {character['steps_taken']}")
     print(f"Opponents defeated: {character['opponents_bested']}")
-    
+
     print("\nItems collected:")
     collected_items = [item for item, has_item in character["inventory"].items() if has_item]
     if collected_items:
@@ -431,7 +478,7 @@ def recap(character):
             print(f"- {item}")
     else:
         print("None!")
-    
+
     print("\nAreas visited:")
     for area, visited in character["areas_visited"].items():
         print(f"- {area}: {'✓' if visited else '✗'}")
@@ -445,12 +492,12 @@ def get_encounter_probability(character, current_area):
         "Calculus": 4,
         "Number Theory": 5
     }
-    
+
     difficulty = area_difficulty[current_area]
     level = math.floor(character["level"])
-    
+
     probability = character["opponent_encounter_cooldown"] + (level // 2) - (difficulty // 2)
-    
+
     return max(1, min(5, probability))
 
 
@@ -458,12 +505,12 @@ def game():
     board = make_board()
     items_locations = add_items_to_board()
     character = make_character()
-    
+
     while True:
         print_board(board, items_locations, (character["column"], character["row"]))
         direction = get_user_choice()
         valid_move = validate_move(board, character, direction)
-        
+
         if valid_move:
             move_character(character, valid_move)
 
@@ -477,7 +524,7 @@ def game():
             if not character["areas_visited"][current_area]:
                 character["opponent_encounter_cooldown"] = 1
                 character["areas_visited"][current_area] = True
-            
+
             encounter_chance = get_encounter_probability(character, current_area)
             if randint(1, encounter_chance) == 1:
                 math_duel(character, current_area)
