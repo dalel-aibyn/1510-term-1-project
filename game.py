@@ -118,10 +118,10 @@ def add_items_to_board():
 def make_character():
     name = input("Enter your character's name: ")
     inventory = {
-        "pen and paper": True,
+        "pen and paper": False,
         "maths textbook": False,
-        "manual of logarithms and roots": True,
-        "calculator": False
+        "manual of logarithms and roots": False,
+        "calculator": True
     }
     areas_visited = {
         "Entrance": True,
@@ -473,14 +473,23 @@ def get_problem(current_area):
     return problem, answer, hint
 
 
-def get_timed_answer(thinking_time):
-    end_time = time() + thinking_time
-
+def get_timed_answer(thinking_time, problem=None, has_calculator=False):
     try:
-        answer = input(f"Your answer (you have {thinking_time} seconds): ")
-        if time() > end_time:
-            return None
-        return float(answer)
+        end_time = time() + thinking_time
+        if has_calculator:
+            print(f"Your answer (you have {thinking_time} seconds): ")
+            answer = input()
+            if time() > end_time:
+                return None
+    
+            cleaned_input = "".join(answer.lower().split())
+            cleaned_problem = "".join(problem.lower().split())
+            return {"answer": cleaned_input == cleaned_problem}
+        else:
+            answer = input(f"Your answer (you have {thinking_time} seconds): ")
+            if time() > end_time:
+                return None
+            return float(answer)
     except ValueError:
         return "critical"
 
@@ -524,6 +533,15 @@ def handle_duel_result(character, player_answer, opponent_guess, correct_answer,
         print(f"You didn't answer in time! You take damage! (-{opponent_stats['damage']} mood)")
         character["mood"] -= opponent_stats["damage"]
         return False
+    elif isinstance(player_answer, dict):  # Calculator case
+        if player_answer["answer"]:  # Typed problem correctly
+            print(f"You typed the problem correctly! Opponent takes damage! (-{character['damage']} mood)")
+            opponent_stats["mood"] -= character["damage"]
+            return True
+        else:  # Typed problem incorrectly
+            print(f"You typed the problem incorrectly! You take damage! (-{opponent_stats['damage']} mood)")
+            character["mood"] -= opponent_stats["damage"]
+            return False
 
     # For unsolvable problems
     if correct_answer is None:
@@ -572,9 +590,10 @@ def math_duel(character, current_area):
                 print(f"The answer lies between {answer_range[0]:.2f} and {answer_range[1]:.2f}")
             else:
                 print("Unable to find the answer range!")
-        print(f"You have {thinking_time} seconds to answer...")
+        if character["inventory"]["calculator"]:
+            print("Type in the problem instead of solving it!")
 
-        player_answer = get_timed_answer(thinking_time)
+        player_answer = get_timed_answer(thinking_time, problem, character["inventory"]["calculator"])
         opponent_guess = generate_opponent_guess(correct_answer)
 
         handle_duel_result(character, player_answer, opponent_guess, correct_answer, opponent_stats)
