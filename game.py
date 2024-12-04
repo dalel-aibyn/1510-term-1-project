@@ -100,7 +100,7 @@ def add_items_to_board():
         0: {"Pen and paper": 1},
         1: {"Textbook": 5},
         2: {"Manual": 4},
-        3: {"Calculator": 3}
+        3: {"Calculator": 2}
     }
 
     items_locations = {(0, 5): "Pen and paper"}
@@ -110,6 +110,9 @@ def add_items_to_board():
         tier_items = items_by_tier[tier]
 
         for item_name, item_quantity in tier_items.items():
+            if item_name == "Calculator":
+                tier_positions = [(x, y) for x, y in tier_positions if y != 5]
+            
             place_tier_items(tier_positions, item_name, item_quantity, items_locations)
 
     return items_locations
@@ -193,28 +196,39 @@ def print_board(board, items_locations, character_pos):
         "red": "\033[41m",
         "purple": "\033[45m",
         "reset": "\033[0m",
-        "pink": "\033[45m"
+        "pink": "\033[45m",
+        "black": "\033[30m"
+    }
+    
+    item_short_names = {
+        "Pen and paper": "P & P",
+        "Textbook": "TBOOK",
+        "Manual": "MNUAL",
+        "Calculator": "CLCTR"
     }
 
-    print("\n     " + "   ".join(str(i) for i in range(7)))
-    print("   +" + "---+" * 7)
+    print("\n       " + "       ".join(str(i) for i in range(7)))
+    print("   +" + "=======+" * 7)
 
     for row in range(7):
         row_str = f" {row} |"
         for column in range(7):
             if (column, row) == character_pos:
-                row_str += f"{colors[board[(column, row)]['tier_color']]} @ {colors['reset']}|"
+                row_str += f"{colors[board[(column, row)]['tier_color']]}{colors['black']}  YOU  {colors['reset']}|"
             elif (column, row) in items_locations:
                 item = items_locations[(column, row)]
-                row_str += f"{colors[board[(column, row)]['tier_color']]} {item[0].upper()} {colors['reset']}|"
+                short_name = item_short_names.get(item, item)
+                row_str += (f"{colors[board[(column, row)]['tier_color']]}"
+                            f"{colors['black']} {short_name} {colors['reset']}|")
             else:
-                row_str += f"{colors[board[(column, row)]['tier_color']]}   {colors['reset']}|"
+                row_str += f"{colors[board[(column, row)]['tier_color']]}       {colors['reset']}|"
         print(row_str)
-        print("   +" + "---+" * 7)
+        print("   +" + "=======+" * 7)
 
 
-def handle_item_pickup(character, items_locations, position):
+def handle_item_pickup(character, items_locations, position, event_occurred):
     if position in items_locations:
+        event_occurred = True
         item = items_locations[position]
         if not character["inventory"][item]:
             character["inventory"][item] = True
@@ -679,10 +693,11 @@ def game():
     items_locations = add_items_to_board()
     character = make_character()
 
-    while True:
+    while is_alive(character):
         print_board(board, items_locations, (character["column"], character["row"]))
         direction = get_user_choice()
         valid_move = validate_move(board, character, direction)
+        event_occurred = False
 
         if valid_move:
             move_character(character, valid_move)
@@ -703,16 +718,20 @@ def game():
                 math_duel(character, current_area)
                 character["opponents_encountered"][current_area] = True
                 character["opponent_encounter_cooldown"] = 5
+                event_occurred = True
             else:
                 character["opponent_encounter_cooldown"] -= 1
 
             if not is_alive(character):
                 break
 
-            handle_item_pickup(character, items_locations, current_pos)
+            handle_item_pickup(character, items_locations, current_pos, event_occurred)
         else:
             print("Invalid move - out of bounds!")
-        sleep(2)
+        if event_occurred:
+            sleep(2)
+        else:
+            sleep(0.5)
     recap(character)
 
 
