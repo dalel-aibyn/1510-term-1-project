@@ -272,7 +272,7 @@ def multiplication_problem():
 
 def easy_power_problem():
     base = randint(2, 10)
-    power = randint(2, 10)
+    power = randint(2, 5)
 
     problem = f"{base}^{power} = ?"
     answer = base ** power
@@ -456,9 +456,13 @@ def generate_opponent_guess(correct_answer):
         return None
     elif isinstance(correct_answer, tuple):
         chosen_solution = random.choice(correct_answer)
-        return random.uniform(chosen_solution * 0.9, chosen_solution * 1.1)
+        delta = max(chosen_solution * 0.2, 5)
+        anchor = random.uniform(chosen_solution - delta, chosen_solution + delta)
+        return random.uniform(anchor - delta, anchor + delta)
     else:
-        return random.uniform(correct_answer * 0.9, correct_answer * 1.1)
+        delta = max(correct_answer * 0.2, 5)
+        anchor = random.uniform(correct_answer - delta, correct_answer + delta)
+        return random.uniform(anchor - delta, anchor + delta)
 
 
 def handle_duel_result(character, player_answer, opponent_guess, correct_answer, opponent_stats):
