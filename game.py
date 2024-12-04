@@ -427,16 +427,47 @@ def extreme_diophantine_problem():
 
 
 def get_problem(current_area):
+    problem, answer, hint = False
     if current_area == "Entrance":
-        return addition_problem()
+        problem, answer = addition_problem()
+        hint = "Tip: Add up the significant digits, while keeping track of their signs"
+        
     elif current_area == "Arithmetics":
-        return random.choice([multiplication_problem, easy_power_problem])()
+        func = random.choice([multiplication_problem, easy_power_problem])
+        problem, answer = func()
+        if func == multiplication_problem:
+            hint = "Tip: Round the numbers to the nearest multiple of 50, then multiply"
+        else:
+            hint = "Tip: Multiply the base by itself the specified number of times"
+            
     elif current_area == "Algebra":
-        return random.choice([hard_power_problem, easy_log_problem])()
+        func = random.choice([hard_power_problem, easy_log_problem])
+        problem, answer = func()
+        if func == hard_power_problem:
+            hint = "Tip: First calculate the power, then multiply by the coefficient"
+        else:
+            hint = "Tip: For log(x), find the power that raises the base to get x"
+            
     elif current_area == "Calculus":
-        return random.choice([hard_log_problem, quadratic_problem])()
+        func = random.choice([hard_log_problem, quadratic_problem])
+        problem, answer = func()
+        if func == hard_log_problem:
+            hint = "Tip: log(a) + log(b) = log(a*b)"
+        else:
+            hint = (f"Tip: x² + bx + c = (x + m)(x + n)\n"
+                    f"m + n = b\n"
+                    f"m * n = c\n"
+                    f"x1 = -m and x2 = -n")
+            
     elif current_area == "Number Theory":
-        return random.choice([cubic_problem, extreme_diophantine_problem])()
+        func = random.choice([cubic_problem, extreme_diophantine_problem])
+        problem, answer = func()
+        if func == cubic_problem:
+            hint = (f"Tip: Use the Rational Root Theorem\n"
+                    f"Any possible rational root of the cubic equation must be a factor of the constant term")
+        else:
+            hint = "Tip: Good luck"
+    return problem, answer, hint
 
 
 def get_timed_answer(thinking_time):
@@ -507,16 +538,17 @@ def handle_duel_result(character, player_answer, opponent_guess, correct_answer,
 
 def math_duel(character, current_area):
     print("MATH DUEL")
-
     opponent_stats = get_opponent_stats(current_area)
 
     while opponent_stats["mood"] > 0 and character["mood"] > 0:
         print(f"\nOpponent mood: {opponent_stats['mood']}")
         print(f"Your Mood: {character['mood']}")
-        problem, correct_answer = get_problem(current_area)
+        problem, correct_answer, hint = get_problem(current_area)
         thinking_time = 16 if character["inventory"]["pen and paper"] else 8
 
         print(f"\nProblem: {problem}")
+        if character["inventory"]["maths textbook"]:
+            print(f"{hint}")
         print(f"You have {thinking_time} seconds to answer...")
 
         player_answer = get_timed_answer(thinking_time)
