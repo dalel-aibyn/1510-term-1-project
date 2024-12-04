@@ -116,10 +116,10 @@ def add_items_to_board():
 def make_character():
     name = input("Enter your character's name: ")
     inventory = {
-        "pen and paper": 0,
-        "maths textbook": 0,
-        "manual of logarithms and roots": 0,
-        "calculator": 0
+        "pen and paper": False,
+        "maths textbook": False,
+        "manual of logarithms and roots": False,
+        "calculator": False
     }
     areas_visited = {
         "Entrance": True,
@@ -210,6 +210,17 @@ def print_board(board, items_locations, character_pos):
         print("   +" + "---+" * 7)
 
 
+def handle_item_pickup(character, items_locations, position):
+    if position in items_locations:
+        item = items_locations[position]
+        if not character["inventory"][item]:
+            character["inventory"][item] = True
+            del items_locations[position]
+            print(f"\nYou found a \"{item}\"! Added to inventory.")
+        else:
+            print(f"\nYou already have a \"{item}\" in your inventory.")
+
+
 def game():
     board = make_board()
     items_locations = add_items_to_board()
@@ -222,9 +233,12 @@ def game():
         
         if valid_move:
             move_character(character, valid_move)
-            current_location = board[(character["column"], character["row"])]
+            current_pos = (character["column"], character["row"])
+            current_location = board[current_pos]
             current_area = current_location["tier_name"]
-            
+
+            handle_item_pickup(character, items_locations, current_pos)
+
             if not character["areas_visited"][current_area]:
                 character["opponent_encounter_cooldown"] = 1
                 character["areas_visited"][current_area] = True
