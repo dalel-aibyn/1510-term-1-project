@@ -326,15 +326,15 @@ def hard_log_problem():
 def quadratic_problem():
     solution1 = randint(-10, 10)
     solution2 = randint(-10, 10)
-    
+
     term_b = -(solution1 + solution2)
     term_c = solution1 * solution2
-    
+
     term_b_string = f"+ {term_b}" if term_b >= 0 else f"- {abs(term_b)}"
     term_c_string = f"+ {term_c}" if term_c >= 0 else f"- {abs(term_c)}"
-    
+
     problem = f"x² {term_b_string}x {term_c_string} = 0"
-    
+
     return problem, (solution1, solution2)
 
 
@@ -342,40 +342,43 @@ def cubic_problem():
     solution1 = randint(-10, 10)
     solution2 = randint(-10, 10)
     solution3 = randint(-10, 10)
-    
+
     term_b = -(solution1 + solution2 + solution3)
     term_c = (solution1 * solution2 + solution2 * solution3 + solution1 * solution3)
     term_d = -(solution1 * solution2 * solution3)
-    
+
     term_b_string = f"+ {term_b}" if term_b >= 0 else f"- {abs(term_b)}"
     term_c_string = f"+ {term_c}" if term_c >= 0 else f"- {abs(term_c)}"
     term_d_string = f"+ {term_d}" if term_d >= 0 else f"- {abs(term_d)}"
-    
+
     problem = f"x³ {term_b_string}x² {term_c_string}x {term_d_string} = 0"
-    
+
     return problem, (solution1, solution2, solution3)
+
+
+def solve_extreme_diophantine():
+    pass
 
 
 def extreme_diophantine_problem():
     terms = [
         lambda: f"{randint(3, 10)}*x",
-        lambda: f"x^{randint(3, 10)}",
-        lambda: f"{randint(3, 10)}^x",
+        lambda: f"x^{randint(3, 5)}",
+        lambda: f"{randint(3, 5)}^x",
         lambda: "x!"
     ]
 
     term_funcs = random.sample(terms, 2)
     term_a = term_funcs[0]()
     term_b = term_funcs[1]()
-    
-    c = randint(1, 50)
 
+    c = randint(1, 50)
     operator = random.choice(["+", "-"])
-    
+
     problem = f"{term_a} {operator} {term_b} = {c}"
-    answer = 69  # Placeholder for now
-    
-    return problem, answer
+    # answer = solve_extreme_diophantine(problem)
+
+    # return problem, answer
 
 
 def get_problem(current_area):
@@ -422,6 +425,13 @@ def handle_duel_result(character, player_answer, opponent_guess, correct_answer,
         print(f"You didn't answer in time! You take damage! (-{opponent_stats['damage']} mood)")
         character["mood"] -= opponent_stats["damage"]
         return False
+
+    # For unsolvable problems
+    if correct_answer is None:
+        print("\nThe problem was particularly challenging!")
+        print(f"You've provided a valid answer! Opponent takes damage! (-{opponent_stats['damage']} mood)")
+        opponent_stats["mood"] -= character["damage"]
+        return True
 
     if isinstance(correct_answer, tuple):
         player_difference = min(abs(player_answer - correct_answer[0]),
