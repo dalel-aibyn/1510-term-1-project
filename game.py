@@ -280,11 +280,40 @@ def easy_power_problem():
     return problem, answer
 
 
+def hard_power_problem():
+    base = randint(5, 25)
+    power = randint(5, 10)
+    multiplier = randint(2, 9)
+    
+    problem = f"{multiplier} * {base}^{power} = ?"
+    answer = multiplier * (base ** power)
+    
+    return problem, answer
+
+
+def easy_log_problem():
+    base = random.choice([2, 3, 5, 10])
+    power = randint(3, 8)
+    multiplier = randint(2, 5)
+    
+    number = multiplier * (base ** power)
+    
+    if base == 10:
+        problem = f"log({number}) = ?"
+    else:
+        problem = f"log{base}({number}) = ?"
+    answer = power + math.log(multiplier, base)
+    
+    return problem, answer
+
+
 def get_problem(current_area):
     if current_area == "Entrance":
         return addition_problem()
     elif current_area == "Arithmetics":
         return random.choice([multiplication_problem, easy_power_problem])()
+    elif current_area == "Algebra":
+        return random.choice([hard_power_problem, easy_log_problem])()
     return "1 + 1", 2  # Placeholder for other cases
 
 
