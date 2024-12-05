@@ -208,11 +208,12 @@ def add_items_to_board():
         tier_items = items_by_tier[tier]
 
         for item_name, item_quantity in tier_items.items():
+
             if item_name == "Manual":
                 tier_positions = [(x, y) for x, y in tier_positions if y != 4]
             if item_name == "Calculator":
                 tier_positions = [(x, y) for x, y in tier_positions if y != 5]
-            
+
             place_tier_items(tier_positions, item_name, item_quantity, items_locations)
 
     return items_locations
@@ -415,7 +416,8 @@ def handle_item_pickup(character, items_locations, position):
     :param character: dictionary containing character's stats
     :param items_locations: dictionary of items locations on the board
     :param position: tuple of (column, row) representing current position,
-    :precondition: character and items_locations must be properly initialized dictionaries, character must have inventory
+    :precondition: character and items_locations must be properly initialized dictionaries,
+                   character must have inventory
     :postcondition: updates character inventory and items_locations if item is picked up
     :return: boolean indicating if an item event occurred
 
@@ -461,15 +463,15 @@ def get_opponent_stats(area):
     :raises KeyError: if area is not valid
 
     >>> print(get_opponent_stats("Entrance"))
-    {'mood': 6, 'damage': 2, 'experience': 0.1}
+    {'mood': 6, 'damage': 2, 'experience': 0.3}
     >>> print(get_opponent_stats("Number Theory"))
     {'mood': 20, 'damage': 11, 'experience': 2}
     """
     return {
-        "Entrance": {"mood": 6, "damage": 2, "experience": 0.1},
-        "Arithmetics": {"mood": 9, "damage": 3, "experience": 0.2},
-        "Algebra": {"mood": 12, "damage": 5, "experience": 0.5},
-        "Calculus": {"mood": 15, "damage": 7, "experience": 1},
+        "Entrance": {"mood": 6, "damage": 2, "experience": 0.3},
+        "Arithmetics": {"mood": 9, "damage": 3, "experience": 0.5},
+        "Algebra": {"mood": 12, "damage": 5, "experience": 0.8},
+        "Calculus": {"mood": 15, "damage": 7, "experience": 1.4},
         "Number Theory": {"mood": 20, "damage": 11, "experience": 2}
     }[area]
 
@@ -482,8 +484,8 @@ def addition_problem():
     :postcondition: creates a problem string and its solution
     :return: (problem string, answer) tuple
 
-    >>> problem, answer = addition_problem()
-    >>> isinstance(problem, str) and isinstance(answer, int)  # Example: 123 - 456 + 789 = ?, 456
+    >>> doctest_problem, doctest_answer = addition_problem()
+    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, int)  # Example: 123 - 456 + 789 = ?, 456
     True
     """
     number1 = randint(-1000, 1000)
@@ -507,8 +509,8 @@ def multiplication_problem():
     :postcondition: creates a problem string and its solution
     :return: (problem string, answer) tuple
 
-    >>> problem, answer = multiplication_problem()
-    >>> isinstance(problem, str) and isinstance(answer, int)  # Example: 12 * 34 * 56 = ?, 22848
+    >>> doctest_problem, doctest_answer = multiplication_problem()
+    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, int)  # Example: 12 * 34 * 56 = ?, 22848
     True
     """
     number1 = randint(1, 100)
@@ -529,8 +531,8 @@ def easy_power_problem():
     :postcondition: creates a problem string and its solution
     :return: (problem string, answer) tuple
 
-    >>> problem, answer = easy_power_problem()
-    >>> isinstance(problem, str) and isinstance(answer, int)  # Example: 2^3 = ?, 8
+    >>> doctest_problem, doctest_answer = easy_power_problem()
+    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, int)  # Example: 2^3 = ?, 8
     True
     """
     base = randint(2, 10)
@@ -550,8 +552,8 @@ def hard_power_problem():
     :postcondition: creates a problem string and its solution
     :return: (problem string, answer) tuple
 
-    >>> problem, answer = hard_power_problem()
-    >>> isinstance(problem, str) and isinstance(answer, int)  # Example: 3 * 10^6 = ?, 3000000
+    >>> doctest_problem, doctest_answer = hard_power_problem()
+    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, int)  # Example: 3 * 10^6 = ?, 3000000
     True
     """
     base = randint(5, 25)
@@ -572,8 +574,8 @@ def easy_log_problem():
     :postcondition: creates a problem string and its solution
     :return: (problem string, answer) tuple
 
-    >>> problem, answer = easy_log_problem()
-    >>> isinstance(problem, str) and isinstance(answer, float)  # Example: log5(625) = ?, 4
+    >>> doctest_problem, doctest_answer = easy_log_problem()
+    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, float)  # Example: log5(625) = ?, 4
     True
     """
     base = random.choice([2, 3, 5, 10])
@@ -599,8 +601,8 @@ def hard_log_problem():
     :postcondition: creates a problem string and its solution
     :return: (problem string, answer) tuple
 
-    >>> problem, answer = hard_log_problem()
-    >>> isinstance(problem, str) and isinstance(answer, int)  # Example: log2(5^3) + log2(5^5) = ?, 18.575...
+    >>> doctest_problem, doctest_answer = hard_log_problem()  # Example: log2(5^3) + log2(5^5) = ?, 18.575...
+    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, int)
     True
     """
     base = random.choice([2, 3, 5, 10])
@@ -626,8 +628,8 @@ def quadratic_problem():
     :postcondition: creates a problem string and its solutions
     :return: (problem string, answer) tuple
 
-    >>> problem, answer = quadratic_problem()
-    >>> isinstance(problem, str) and isinstance(answer, tuple) and len(answer) == 2  # Example: x² - 3x + 2 = 0, (1, 2)
+    >>> doctest_problem, doctest_answer = quadratic_problem()  # Example: x² - 3x + 2 = 0, (1, 2)
+    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, tuple) and len(doctest_answer) == 2
     True
     """
     solution1 = randint(-10, 10)
@@ -652,8 +654,8 @@ def cubic_problem():
     :postcondition: creates a problem string and its solutions
     :return: (problem string, answer) tuple
 
-    >>> problem, answer = cubic_problem()
-    >>> isinstance(problem, str) and isinstance(answer, tuple) and len(answer) == 3  # Example: x³ - 6x² + 11x - 6 = 0, (1, 2, 3)
+    >>> doctest_problem, doctest_answer = cubic_problem()  # Example: x³ - 6x² + 11x - 6 = 0, (1, 2, 3)
+    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, tuple) and len(doctest_answer) == 3
     True
     """
     solution1 = randint(-10, 10)
@@ -682,7 +684,7 @@ def factorial_term(answer):
     :postcondition: creates a term string and its value
     :return: [value, term string] list
 
-    >>> print(factorial_term(5)  # doctest: +SKIP
+    >>> print(factorial_term(5)) # doctest: +SKIP
     [120.0, 'x!']
     >>> print(factorial_term(4))  # doctest: +SKIP
     [144.0, '6x!']
@@ -796,8 +798,8 @@ def extreme_diophantine_problem():
     :postcondition: creates a problem string and its solution
     :return: (problem string, answer) tuple by default, None if the problem is unsolvable
 
-    >>> problem, answer = extreme_diophantine_problem()        # doctest: +SKIP
-    >>> isinstance(problem, str) and isinstance(answer, float) # doctest: +SKIP
+    >>> doctest_problem, doctest_answer = extreme_diophantine_problem()        # doctest: +SKIP
+    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, float) # doctest: +SKIP
     True  # Example: x! + 5^x - 15 = 0, 1.619...
     """
     answer = random.uniform(-10, 10)
@@ -885,8 +887,10 @@ def get_timed_answer(thinking_time, problem=None, has_calculator=False):
     :param problem: string containing the problem, used for when the user has a calculator
     :param has_calculator: boolean indicating if the user has a calculator
     :precondition: thinking_time must be positive number
-    :postcondition: returns user's answer if provided within time limit, or None if time expired, or "critical" if invalid input
-    :return: float for most cases, dict for when the user has a calculator, None if time expired, "critical" if invalid input
+    :postcondition: returns user's answer if provided within time limit,
+                    or None if time expired, or "critical" if invalid input
+    :return: float for most cases, dict for when the user has a calculator,
+             None if time expired, "critical" if invalid input
 
     >>> doctest_answer = get_timed_answer(8)  # doctest: +SKIP
     >>> isinstance(doctest_answer, float)  # doctest: +SKIP
@@ -1075,11 +1079,11 @@ def math_duel(character, current_area):
         handle_duel_result(character, player_answer, opponent_guess, correct_answer, opponent_stats)
 
     if opponent_stats["mood"] <= 0:
+        character["mood"] = min(character["max_mood"], character["mood"] + 10)
         print(f"\nYou won the duel! You replenish 10 mood. \nYour mood is currently at "
               f"{character['mood']}/{character["max_mood"]}")
         character["opponents_bested"] += 1
         level_up(character, opponent_stats["experience"])
-        character["mood"] = min(character["max_mood"], character["mood"] + 10)
         return True
     else:
         return False
@@ -1095,8 +1099,8 @@ def level_up(character, experience):
     :postcondition: levels up the character and increases their stats
     :return: None
 
-    >>> character = {"level": 2.5, "max_mood": 20, "damage": 5}
-    >>> level_up(character, 1.8)  # doctest: +SKIP
+    >>> doctest_character = {"level": 2.5, "max_mood": 20, "damage": 5}
+    >>> level_up(doctest_character, 1.8)  # doctest: +SKIP
     Level Up! You are now level 4!
     Max mood increased to 32!
     Damage increased to 8!
