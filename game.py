@@ -173,7 +173,8 @@ def place_tier_items(tier_positions, item_name, item_quantity, items_locations):
 
         if not has_adjacent_item(position, items_locations):
             items_locations[position] = item_name
-            tier_positions.remove(position)
+            if position in tier_positions:
+                tier_positions.remove(position)
             items_placed += 1
 
         attempts += 1
