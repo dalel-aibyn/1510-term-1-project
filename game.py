@@ -56,14 +56,14 @@ def make_board(columns=7, rows=7):
     :return: dictionary containing board dimensions and tile information
     :raises ValueError: if columns or rows are not 7
 
-    >>> board = make_board()
-    >>> board["max_x"], board["max_y"]
+    >>> doctest_board = make_board()
+    >>> doctest_board["max_x"], doctest_board["max_y"]
     (7, 7)
-    >>> board[(0, 6)]["tier_name"]
+    >>> doctest_board[(0, 6)]["tier_name"]
     'Entrance'
-    >>> board[(6, 6)]["tier_name"]
+    >>> doctest_board[(6, 6)]["tier_name"]
     'Goal'
-    >>> board[(4, 3)]["tier_color"]
+    >>> doctest_board[(4, 3)]["tier_color"]
     'orange'
     """
     if columns != 7 or rows != 7:
@@ -167,7 +167,7 @@ def place_tier_items(tier_positions, item_name, item_quantity, items_locations):
     """
     items_placed = 0
     attempts = 0
-    max_attempts = 69 # to prevent infinite loop
+    max_attempts = 69  # to prevent infinite loop
 
     while items_placed < item_quantity and attempts < max_attempts and tier_positions:
         position = random.choice(tier_positions)
@@ -226,14 +226,14 @@ def make_character():
     :postcondition: creates a dictionary with character's initial state
     :return: dictionary containing character stats
 
-    >>> character = make_character()
-    >>> character["mood"]
+    >>> character = make_character() # doctest: +SKIP
+    >>> character["mood"] # doctest: +SKIP
     20
-    >>> character["inventory"]["Pen and paper"]
+    >>> character["inventory"]["Pen and paper"] # doctest: +SKIP
     False
-    >>> character["areas_visited"]["Entrance"]
+    >>> character["areas_visited"]["Entrance"] # doctest: +SKIP
     True
-    >>> character["column"] == 0 and character["row"] == 6  # Starting position
+    >>> character["column"] == 0 and character["row"] == 6  # doctest: +SKIP
     True
     """
     name = input("Enter your character's name: ")
@@ -285,14 +285,14 @@ def get_user_choice():
     :postcondition: returns valid movement direction
     :return: tuple of (row_delta, column_delta) representing movement direction
 
-    >>> get_user_choice()  # n
-    (-1, 0)
-    >>> get_user_choice()  # s
-    (1, 0)
-    >>> get_user_choice()  # e
-    (0, 1)
-    >>> get_user_choice()  # w
-    (0, -1)
+    >>> get_user_choice()  # doctest: +SKIP
+    (-1, 0) # n
+    >>> get_user_choice()  # doctest: +SKIP
+    (1, 0) # s
+    >>> get_user_choice()  # doctest: +SKIP
+    (0, 1) # e
+    >>> get_user_choice()  # doctest: +SKIP
+    (0, -1) # w
     """
     valid_inputs = {'n': (-1, 0), 's': (1, 0), 'e': (0, 1), 'w': (0, -1)}
     while True:
@@ -313,11 +313,11 @@ def validate_move(board, character, direction):
     :postcondition: determines if the move stays within board boundaries
     :return: direction tuple if move is valid, False otherwise
 
-    >>> board = {"max_x": 7, "max_y": 7}
-    >>> char = {"row": 0, "column": 0}
-    >>> validate_move(board, char, (-1, 0))  # Invalid move north
-        False
-    >>> validate_move(board, char, (0, 1))   # Move east
+    >>> doctest_board = {"max_x": 7, "max_y": 7}
+    >>> doctest_character = {"row": 0, "column": 0}
+    >>> validate_move(doctest_board, doctest_character, (-1, 0))
+    False
+    >>> validate_move(doctest_board, doctest_character, (0, 1))
     (0, 1)
     """
     delta_row, delta_column = direction
