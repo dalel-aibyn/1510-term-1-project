@@ -32,7 +32,6 @@ def make_board(columns=7, rows=7):
     if columns != 7 or rows != 7:
         raise ValueError("Board dimensions must be 7x7")
 
-    board = {"max_x": columns, "max_y": rows}
     tiers = {
         0: {"name": "Entrance", "color": "blue"},
         1: {"name": "Arithmetics", "color": "green"},
@@ -41,6 +40,8 @@ def make_board(columns=7, rows=7):
         4: {"name": "Number Theory", "color": "red"},
         5: {"name": "Goal", "color": "purple"}
     }
+
+    board = {"max_x": columns, "max_y": rows}
 
     for column in range(columns):
         for row in range(rows):
@@ -126,7 +127,7 @@ def make_character():
         "Pen and paper": False,
         "Textbook": False,
         "Manual": False,
-        "Calculator": True
+        "Calculator": False
     }
     areas_visited = {
         "Entrance": True,
@@ -216,7 +217,9 @@ def print_board(board, items_locations, character_pos):
         row_str = f" {row} |"
         for column in range(7):
             if (column, row) == character_pos:
-                row_str += f"{colors[board[(column, row)]['tier_color']]}{colors['black']}  YOU  {colors['reset']}|"
+                row_str += f"{colors[board[(column, row)]['tier_color']]}{colors['black']} *YOU* {colors['reset']}|"
+            elif column == 6 and row == 6:
+                row_str += f"{colors[board[(column, row)]['tier_color']]}{colors['black']} *END* {colors['reset']}|"
             elif (column, row) in items_locations:
                 item = items_locations[(column, row)]
                 short_name = item_short_names.get(item, item)
@@ -228,27 +231,18 @@ def print_board(board, items_locations, character_pos):
         print("   +" + "=======+" * 7)
 
 
-def handle_item_pickup(character, items_locations, position, event_occurred):
+def handle_item_pickup(character, items_locations, position):
     if position in items_locations:
-        event_occurred = True
         item = items_locations[position]
         if not character["inventory"][item]:
             character["inventory"][item] = True
             del items_locations[position]
-            print(f"\nYou've found a \"{item}\"! Added to inventory.")
-
-            if item == "Pen and paper":
-                character["time given to solve"] = 10
-                print("Your time to solve problems has increased from 8 seconds to 16 seconds!")
-            elif item == "Textbook":
-                print("You will now get hints on how to solve the problem!")
-            elif item == "Manual":
-                print("You will now see the range within which the correct answer lies!")
-            elif item == "Calculator":
-                print("Type in the problem instead of solving it!")
-
+            print_item_found(item)
+            return True
         else:
             print(f"\nYou already have a \"{item}\" in your inventory.")
+            return True
+    return False
 
 
 def get_opponent_stats(area):
@@ -262,9 +256,9 @@ def get_opponent_stats(area):
 
 
 def addition_problem():
-    number1 = randint(-10000, 10000)
-    number2 = randint(-10000, 10000)
-    number3 = randint(-10000, 10000)
+    number1 = randint(-1000, 1000)
+    number2 = randint(-1000, 1000)
+    number3 = randint(-1000, 1000)
 
     sign1 = "+" if number2 == abs(number2) else "-"
     sign2 = "+" if number3 == abs(number3) else "-"
@@ -276,9 +270,9 @@ def addition_problem():
 
 
 def multiplication_problem():
-    number1 = randint(1, 1000)
-    number2 = randint(1, 1000)
-    number3 = randint(1, 1000)
+    number1 = randint(1, 100)
+    number2 = randint(1, 100)
+    number3 = randint(1, 100)
 
     problem = f"{number1} * {number2} * {number3} = ?"
     answer = number1 * number2 * number3
@@ -455,7 +449,7 @@ def get_problem(current_area):
         func = random.choice([multiplication_problem, easy_power_problem])
         problem, answer = func()
         if func == multiplication_problem:
-            hint = "Tip: Round the numbers to the nearest multiple of 50, then multiply"
+            hint = "Tip: Round the numbers to the nearest multiple of 10, then multiply"
         else:
             hint = "Tip: Multiply the base by itself the specified number of times"
             
@@ -525,17 +519,15 @@ def generate_opponent_guess(correct_answer):
     
 
 def generate_answer_range(correct_answer):
-    if correct_answer is None:
-        return None
-    elif isinstance(correct_answer, tuple):
+    if isinstance(correct_answer, tuple):
         chosen_solution = random.choice(correct_answer)
         delta = max(abs(chosen_solution) * 0.125, 5)
-        anchor = random.uniform(chosen_solution - delta, chosen_solution + delta)
-        return anchor - delta * 2, anchor + delta * 2
     else:
         delta = max(abs(correct_answer) * 0.125, 5)
-        anchor = random.uniform(correct_answer - delta, correct_answer + delta)
-        return anchor - delta * 2, anchor + delta * 2
+        chosen_solution = correct_answer
+        
+    anchor = random.uniform(chosen_solution - delta, chosen_solution + delta)
+    return anchor - delta * 2, anchor + delta * 2
 
 
 def handle_duel_result(character, player_answer, opponent_guess, correct_answer, opponent_stats):
@@ -544,20 +536,20 @@ def handle_duel_result(character, player_answer, opponent_guess, correct_answer,
         print(f"Invalid input! Opponent deals CRITICAL damage! (-{critical_damage} mood)")
         character["mood"] -= critical_damage
         return False
-    elif player_answer is None:
+    if player_answer is None:
         print(f"Opponent guessed: {opponent_guess:.2f}")
         print(f"You didn't answer in time! You take damage! (-{opponent_stats['damage']} mood)")
         character["mood"] -= opponent_stats["damage"]
         return False
-    elif isinstance(player_answer, dict):  # Calculator case
-        if player_answer["answer"]:  # Typed problem correctly
+        
+    if isinstance(player_answer, dict):
+        if player_answer["answer"]:
             print(f"You typed the problem correctly! Opponent takes damage! (-{character['damage']} mood)")
             opponent_stats["mood"] -= character["damage"]
             return True
-        else:  # Typed problem incorrectly
-            print(f"You typed the problem incorrectly! You take damage! (-{opponent_stats['damage']} mood)")
-            character["mood"] -= opponent_stats["damage"]
-            return False
+        print(f"You typed the problem incorrectly! You take damage! (-{opponent_stats['damage']} mood)")
+        character["mood"] -= opponent_stats["damage"]
+        return False
 
     # For unsolvable problems
     if correct_answer is None:
@@ -567,24 +559,22 @@ def handle_duel_result(character, player_answer, opponent_guess, correct_answer,
         return True
 
     if isinstance(correct_answer, tuple):
-        player_difference = min(abs(player_answer - correct_answer[0]),
-                                abs(player_answer - correct_answer[1]))
-        opponent_difference = min(abs(opponent_guess - correct_answer[0]),
-                                  abs(opponent_guess - correct_answer[1]))
+        player_difference = min(abs(player_answer - solution) for solution in correct_answer)
+        opponent_difference = min(abs(opponent_guess - solution) for solution in correct_answer)
     else:
         player_difference = abs(player_answer - correct_answer)
         opponent_difference = abs(opponent_guess - correct_answer)
 
     print(f"\nOpponent guessed: {opponent_guess:.2f}")
-
+    
     if player_difference < opponent_difference:
         print(f"You were closer! Opponent takes damage! (-{character['damage']} mood)")
         opponent_stats["mood"] -= character["damage"]
         return True
-    else:
-        print(f"Opponent was closer! You take damage! (-{opponent_stats['damage']} mood)")
-        character["mood"] -= opponent_stats["damage"]
-        return False
+    
+    print(f"Opponent was closer! You take damage! (-{opponent_stats['damage']} mood)")
+    character["mood"] -= opponent_stats["damage"]
+    return False
 
 
 def math_duel(character, current_area):
@@ -609,17 +599,18 @@ def math_duel(character, current_area):
         if character["inventory"]["Calculator"]:
             print("Type in the problem instead of solving it!")
 
-        player_answer = get_timed_answer(thinking_time, problem, character["inventory"]["Calculator"])
+        player_answer = get_timed_answer(thinking_time, problem if character["inventory"]["Calculator"]
+                                         else None, character["inventory"]["Calculator"])
         opponent_guess = generate_opponent_guess(correct_answer)
 
         handle_duel_result(character, player_answer, opponent_guess, correct_answer, opponent_stats)
 
     if opponent_stats["mood"] <= 0:
-        print(f"\nYou won the duel! You replenish 5 mood. \nYour mood is currently at "
+        print(f"\nYou won the duel! You replenish 10 mood. \nYour mood is currently at "
               f"{character['mood']}/{character["max_mood"]}")
         character["opponents_bested"] += 1
         level_up(character, opponent_stats["experience"])
-        character["mood"] = min(character["max_mood"], character["mood"] + 5)
+        character["mood"] = min(character["max_mood"], character["mood"] + 10)
         return True
     else:
         return False
@@ -647,19 +638,134 @@ def is_goal(character):
     return character["row"] == 6 and character["column"] == 6
 
 
-def recap(character):
-    if is_alive(character):
-        print(f"\nCongratulations, {character['name']}! You've reached the goal!")
+def get_encounter_probability(character, current_area):
+    area_difficulty = {
+        "Entrance": 1,
+        "Arithmetics": 2,
+        "Algebra": 3,
+        "Calculus": 4,
+        "Number Theory": 5
+    }
+    
+    difficulty = area_difficulty[current_area]
+    level = math.floor(character["level"])
+    return max(1, min(5, character["opponent_encounter_cooldown"] + (level // 2) - (difficulty // 2)))
+
+
+def print_intro():
+    colors = {
+        "blue": "\033[44m",
+        "green": "\033[42m",
+        "yellow": "\033[43m",
+        "orange": "\033[48;5;208m",
+        "red": "\033[41m",
+        "purple": "\033[45m",
+        "reset": "\033[0m",
+        "pink": "\033[45m",
+        "black": "\033[30m"
+    }
+    print(f"""
+╔════════════════════════════════════════════════════════════════════╗
+║                  WELCOME TO THE MATHEMATICS REALM                  ║
+╚════════════════════════════════════════════════════════════════════╝
+          
+You find yourself in the Mathematics Realm, a realm where numbers and expressions reign supreme.
+Your goal is to reach the end by navigating through increasingly challenging mathematical territories.
+You are allowed to, but not discouraged to jump into difficult areas.
+
+Each area presents unique challenges:
+• {colors['blue']}{colors['black']}Entrance     {colors['reset']} - Basic arithmetic
+• {colors['green']}{colors['black']}Arithmetics  {colors['reset']} - A bit more challenging arithmetic
+• {colors['yellow']}{colors['black']}Algebra      {colors['reset']} - Complex algebraic expressions
+• {colors['orange']}{colors['black']}Calculus     {colors['reset']} - Difficult equations and functions
+• {colors['red']}{colors['black']}Number Theory{colors['reset']} - Complex mathematical problems
+
+Collect items to aid your journey:
+• Pen and Paper - Doubles your thinking time
+• Textbook      - Provides helpful tips
+• Manual        - Shows the range where within which, the answer lies
+• Calculator    - Lets you type problems instead of solving them
+
+Good luck and have fun!
+""")
+
+
+def print_area_description(area_name, first_visit=False):
+    descriptions = {
+        "Entrance": [
+            "\nYou stand at the beginning of your mathematical journey.",
+            "\nThe familiar territory of addition and subtraction surrounds you."
+        ],
+        "Arithmetics": [
+            "\nNumbers float in the air around you. The fundamental laws of mathematics are strong here.",
+            "\nYou've returned to the domain of core mathematical operations."
+        ],
+        "Algebra": [
+            "\nLetters and numbers intertwine in the space around you.",
+            "\nYou've stepped back into the realm of algebraic mysteries."
+        ],
+        "Calculus": [
+            "\nThe very space seems to curve and flow here.",
+            "\nFunctions flow like rivers around you."
+        ],
+        "Number Theory": [
+            "\nThe deepest mysteries await.",
+            "\nThe very foundations of numbers surround you."
+        ],
+    }
+    if area_name in descriptions:
+        print(descriptions[area_name][0] if first_visit else descriptions[area_name][1])
+
+
+def print_duel_start():
+    duel_starts = [
+        "\nA mathematical entity materializes before you...",
+        "\nThe air crackles with mathematical energy as a challenger appears...",
+        "\nNumbers swirl and coalesce into a challenging form...",
+        "\nA guardian of mathematical truth blocks your path...",
+        "\nThe mathematical realm itself challenges your knowledge..."
+    ]
+    print(random.choice(duel_starts))
+
+
+def print_item_found(item_name):
+    item_messages = {
+        "Pen and paper": "\nYou have found a trusty pen and paper! Now you'll have more time to solve problems.",
+        "Textbook": "\nAn ancient mathematical tome! Its pages contain helpful tips for solving problems.",
+        "Manual": "\nA manual of mathematical wisdom! It will show you the range where answers lie.",
+        "Calculator": "\nA mystical Calculator! You can now type in the problems instead of solving them."
+    }
+    print(item_messages.get(item_name, f"\nYou found a {item_name}!"))
+
+
+def print_outro(character, victory=True):
+    if victory:
+        print(f"""
+╔════════════════════════════════════════════════════════════════════╗
+║                              VICTORY!                              ║
+╚════════════════════════════════════════════════════════════════════╝
+
+Congratulations, {character['name']}! You've conquered the Mathematical Realm!
+
+Your journey by the numbers:
+• Reached Level: {math.floor(character['level'])}
+• Steps Taken: {character['steps_taken']}
+• Opponents Bested: {character['opponents_bested']}
+• Final Mood: {character['mood']}/{character['max_mood']}
+""")
     else:
-        print(f"\n{character['name']}, you've been bested...")
+        print(f"""
+╔════════════════════════════════════════════════════════════════════╗
+║                             GAME OVER!                             ║
+╚════════════════════════════════════════════════════════════════════╝
 
-    print("\nFinal Stats:")
-    print(f"Level: {math.floor(character['level'])}")
-    print(f"Mood: {character['mood']}/{character['max_mood']}")
-    print(f"Damage: {character['damage']}")
-    print(f"Steps taken: {character['steps_taken']}")
-    print(f"Opponents defeated: {character['opponents_bested']}")
+Alas, {character['name']}, the mathematical challenges proved too great.
 
+Your journey ended with:
+• Level: {math.floor(character['level'])}
+• Steps Taken: {character['steps_taken']}
+• Opponents Bested: {character['opponents_bested']}
+""")
     print("\nItems collected:")
     collected_items = [item for item, has_item in character["inventory"].items() if has_item]
     if collected_items:
@@ -673,27 +779,13 @@ def recap(character):
         print(f"- {area}: {'✓' if visited else '✗'}")
 
 
-def get_encounter_probability(character, current_area):
-    area_difficulty = {
-        "Entrance": 1,
-        "Arithmetics": 2,
-        "Algebra": 3,
-        "Calculus": 4,
-        "Number Theory": 5
-    }
-
-    difficulty = area_difficulty[current_area]
-    level = math.floor(character["level"])
-
-    probability = character["opponent_encounter_cooldown"] + (level // 2) - (difficulty // 2)
-
-    return max(1, min(5, probability))
-
-
 def game():
+    print_intro()
     board = make_board()
     items_locations = add_items_to_board()
     character = make_character()
+    
+    last_area = "Entrance"
 
     while is_alive(character):
         print_board(board, items_locations, (character["column"], character["row"]))
@@ -711,13 +803,17 @@ def game():
             current_location = board[current_pos]
             current_area = current_location["tier_name"]
 
-            if not character["areas_visited"][current_area]:
-                character["opponent_encounter_cooldown"] = 1
-                character["areas_visited"][current_area] = True
+            if current_area != last_area:
+                print_area_description(current_area, not character["areas_visited"][current_area])
+                last_area = current_area
+                if not character["areas_visited"][current_area]:
+                    character["opponent_encounter_cooldown"] = 1
+                    character["areas_visited"][current_area] = True
                 event_occurred = True
 
             encounter_chance = get_encounter_probability(character, current_area)
             if randint(1, encounter_chance) == 1:
+                print_duel_start()
                 math_duel(character, current_area)
                 character["opponents_encountered"][current_area] = True
                 character["opponent_encounter_cooldown"] = 5
@@ -728,11 +824,16 @@ def game():
             if not is_alive(character):
                 break
 
-            handle_item_pickup(character, items_locations, current_pos, event_occurred)
+            if current_pos in items_locations:
+                event_occurred = handle_item_pickup(character, items_locations, current_pos)
+
         else:
             print("Invalid move - out of bounds!")
+            event_occurred = True
+
         sleep(2 if event_occurred else 0.5)
-    recap(character)
+    
+    print_outro(character, is_alive(character))
 
 
 def main():
