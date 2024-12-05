@@ -96,7 +96,7 @@ def has_adjacent_item(position, items_locations):
     Determine if there is an item in any adjacent position.
 
     :param position: tuple of (column, row) representing current position
-    :param items_locations: dictionary mapping positions to item names
+    :param items_locations: dictionary with positions as keys and item names as values
     :precondition: position must be a tuple of two integers
     :postcondition: correctly identifies if any adjacent position has an item
     :return: True if an adjacent position has an item, False otherwise
@@ -132,8 +132,7 @@ def get_tier_positions(tier):
     :postcondition: correctly identifies all positions that belong to the specified tier
     :return: list of tuples containing (column, row) coordinates for the tier
 
-    >>> positions = get_tier_positions(5)  # Goal position
-    >>> positions
+    >>> print(get_tier_positions(5))  # Goal position
     [(6, 6)]
     >>> len(get_tier_positions(1)) > 0
     True
@@ -223,7 +222,7 @@ def make_character():
     Create a new character with initial stats.
 
     :precondition: none
-    :postcondition: creates a dictionary with character's initial state
+    :postcondition: creates a dictionary with character's initial stats
     :return: dictionary containing character stats
 
     >>> character = make_character() # doctest: +SKIP
@@ -307,8 +306,8 @@ def validate_move(board, character, direction):
     Validate if a move stays within the board boundaries.
 
     :param board: dictionary containing board information
-    :param character: dictionary containing character's current position
-    :param direction: tuple of (row_delta, column_delta) for movement
+    :param character: dictionary containing character's stats
+    :param direction: tuple of (row_delta, column_delta) for movement, character must have row and column stats
     :precondition: board must be properly initialized with max_x and max_y
     :postcondition: determines if the move stays within board boundaries
     :return: direction tuple if move is valid, False otherwise
@@ -333,19 +332,19 @@ def move_character(character, direction):
     """
     Update character's position based on movement direction.
 
-    :param character: dictionary containing character's current position and stats
+    :param character: dictionary containing character's stats
     :param direction: tuple of (row_delta, column_delta) for movement
-    :precondition: character must be a valid character dictionary, direction must be a valid movement tuple
+    :precondition: character must have row and column stats, direction must be a valid movement tuple
     :postcondition: updates character's position and increments steps taken
     :return: None
 
     >>> char = {"row": 0, "column": 6, "steps_taken": 0}
-    >>> move_character(char, (-1, 0))
+    >>> move_character(char, (1, 0))
     >>> char["row"], char["column"], char["steps_taken"]
-    (6, 0, 1)
-    >>> move_character(char, (0, 1))
+    (1, 6, 1)
+    >>> move_character(char, (0, -1))
     >>> char["row"], char["column"], char["steps_taken"]
-    (6, 1, 2)
+    (1, 5, 2)
     """
     delta_row, delta_column = direction
     character["row"] += delta_row
@@ -364,9 +363,8 @@ def print_board(board, items_locations, character_pos):
     :postcondition: prints formatted board to console
     :return: None
 
-    >>> test_board = {(0, 0): {"tier_name": "Arithmetics", "tier_color": "green"}, 
-                      "max_x": 1, "max_y": 1}        # doctest: +SKIP
-    >>> test_items = {(1, 0): "Manual"}              # doctest: +SKIP
+    >>> test_board = {(0, 0): {"tier_name": "Arithmetics", "tier_color": "green"}, "max_x": 1, "max_y": 1}
+    >>> test_items = {(1, 0): "Manual"}
     >>> print_board(test_board, test_items, (0, 1))  # doctest: +SKIP
     """
     colors = {
@@ -413,25 +411,29 @@ def handle_item_pickup(character, items_locations, position):
     """
     Handle the item pickup event.
 
-    :param character: dictionary containing character's inventory
+    :param character: dictionary containing character's stats
     :param items_locations: dictionary of items locations on the board
-    :param position: tuple of (column, row) representing current position
-    :precondition: character and items_locations must be properly initialized dictionaries
+    :param position: tuple of (column, row) representing current position,
+    :precondition: character and items_locations must be properly initialized dictionaries, character must have inventory
     :postcondition: updates character inventory and items_locations if item is picked up
     :return: boolean indicating if an item event occurred
 
     >>> char = {"inventory": {"Textbook": False}}
     >>> items = {(1, 1): "Textbook"}
     >>> handle_item_pickup(char, items, (1, 1))
+    <BLANKLINE>
+    An ancient mathematical tome! Its pages contain helpful tips for solving problems.
     True
     >>> char["inventory"]["Textbook"]
     True
     >>> (1, 1) in items
     False
-    >>> handle_item_pickup(char, items, (1, 1))  # No item at position
+    >>> handle_item_pickup(char, items, (1, 1))  # No item at position anymore
     False
     >>> items = {(2, 2): "Textbook"}
     >>> handle_item_pickup(char, items, (2, 2))  # Already have item
+    <BLANKLINE>
+    You already have a "Textbook" in your inventory.
     True
     """
     if position in items_locations:
@@ -448,6 +450,20 @@ def handle_item_pickup(character, items_locations, position):
 
 
 def get_opponent_stats(area):
+    """
+    Get the stats for an opponent in a given area.
+
+    :param area: string name of the area
+    :precondition: area must be one of the following: Entrance, Arithmetics, Algebra, Calculus, Number Theory
+    :postcondition: returns dictionary with appropriate opponent stats for the area
+    :return: dictionary containing mood, damage, and experience that the character gains after defeating the opponent
+    :raises KeyError: if area is not valid
+
+    >>> print(get_opponent_stats("Entrance"))
+    {'mood': 6, 'damage': 2, 'experience': 0.1}
+    >>> print(get_opponent_stats("Number Theory"))
+    {'mood': 20, 'damage': 11, 'experience': 2}
+    """
     return {
         "Entrance": {"mood": 6, "damage": 2, "experience": 0.1},
         "Arithmetics": {"mood": 9, "damage": 3, "experience": 0.2},
@@ -458,6 +474,17 @@ def get_opponent_stats(area):
 
 
 def addition_problem():
+    """
+    Generate an addition problem with three integers.
+
+    :precondition: none
+    :postcondition: creates a problem string and its solution
+    :return: (problem string, answer) tuple
+
+    >>> problem, answer = addition_problem()
+    >>> isinstance(problem, str) and isinstance(answer, int)  # Example: 123 - 456 + 789 = ?, 456
+    True
+    """
     number1 = randint(-1000, 1000)
     number2 = randint(-1000, 1000)
     number3 = randint(-1000, 1000)
@@ -472,6 +499,17 @@ def addition_problem():
 
 
 def multiplication_problem():
+    """
+    Generate a multiplication problem with three integers.
+
+    :precondition: none
+    :postcondition: creates a problem string and its solution
+    :return: (problem string, answer) tuple
+
+    >>> problem, answer = multiplication_problem()
+    >>> isinstance(problem, str) and isinstance(answer, int)  # Example: 12 * 34 * 56 = ?, 22848
+    True
+    """
     number1 = randint(1, 100)
     number2 = randint(1, 100)
     number3 = randint(1, 100)
@@ -483,6 +521,17 @@ def multiplication_problem():
 
 
 def easy_power_problem():
+    """
+    Generate a simple exponentiation problem.
+
+    :precondition: none
+    :postcondition: creates a problem string and its solution
+    :return: (problem string, answer) tuple
+
+    >>> problem, answer = easy_power_problem()
+    >>> isinstance(problem, str) and isinstance(answer, int)  # Example: 2^3 = ?, 8
+    True
+    """
     base = randint(2, 10)
     power = randint(2, 5)
 
@@ -493,6 +542,17 @@ def easy_power_problem():
 
 
 def hard_power_problem():
+    """
+    Generate a bit more complex exponentiation problem with a multiplier.
+
+    :precondition: none
+    :postcondition: creates a problem string and its solution
+    :return: (problem string, answer) tuple
+
+    >>> problem, answer = hard_power_problem()
+    >>> isinstance(problem, str) and isinstance(answer, int)  # Example: 3 * 10^6 = ?, 3000000
+    True
+    """
     base = randint(5, 25)
     power = randint(5, 10)
     multiplier = randint(2, 9)
@@ -504,6 +564,17 @@ def hard_power_problem():
 
 
 def easy_log_problem():
+    """
+    Generate a simple logarithm problem.
+
+    :precondition: none
+    :postcondition: creates a problem string and its solution
+    :return: (problem string, answer) tuple
+
+    >>> problem, answer = easy_log_problem()
+    >>> isinstance(problem, str) and isinstance(answer, float)  # Example: log5(625) = ?, 4
+    True
+    """
     base = random.choice([2, 3, 5, 10])
     power = randint(3, 8)
     multiplier = randint(2, 5)
@@ -520,22 +591,44 @@ def easy_log_problem():
 
 
 def hard_log_problem():
+    """
+    Generate a complex logarithm problem.
+
+    :precondition: none
+    :postcondition: creates a problem string and its solution
+    :return: (problem string, answer) tuple
+
+    >>> problem, answer = hard_log_problem()
+    >>> isinstance(problem, str) and isinstance(answer, int)  # Example: log2(5^3) + log2(5^5) = ?, 18.575...
+    True
+    """
     base = random.choice([2, 3, 5, 10])
     power1 = randint(2, 6)
     power2 = randint(2, 6)
 
-    x = randint(2, 5)
+    raised_term = randint(2, 5)
 
     if base == 10:
-        problem = f"log({x}^{power1}) + log({x}^{power2}) = ?"
+        problem = f"log({raised_term}^{power1}) + log({raised_term}^{power2}) = ?"
     else:
-        problem = f"log{base}({x}^{power1}) + log{base}({x}^{power2}) = ?"
+        problem = f"log{base}({raised_term}^{power1}) + log{base}({raised_term}^{power2}) = ?"
     answer = power1 + power2
 
     return problem, answer
 
 
 def quadratic_problem():
+    """
+    Generate a quadratic equation problem.
+
+    :precondition: none
+    :postcondition: creates a problem string and its solutions
+    :return: (problem string, answer) tuple
+
+    >>> problem, answer = quadratic_problem()
+    >>> isinstance(problem, str) and isinstance(answer, tuple) and len(answer) == 2  # Example: x² - 3x + 2 = 0, (1, 2)
+    True
+    """
     solution1 = randint(-10, 10)
     solution2 = randint(-10, 10)
 
@@ -551,6 +644,17 @@ def quadratic_problem():
 
 
 def cubic_problem():
+    """
+    Generate a cubic equation problem.
+
+    :precondition: none
+    :postcondition: creates a problem string and its solutions
+    :return: (problem string, answer) tuple
+
+    >>> problem, answer = cubic_problem()
+    >>> isinstance(problem, str) and isinstance(answer, tuple) and len(answer) == 3  # Example: x³ - 6x² + 11x - 6 = 0, (1, 2, 3)
+    True
+    """
     solution1 = randint(-10, 10)
     solution2 = randint(-10, 10)
     solution3 = randint(-10, 10)
@@ -569,6 +673,19 @@ def cubic_problem():
 
 
 def factorial_term(answer):
+    """
+    Generate a factorial term.
+
+    :param answer: number representing the answer
+    :precondition: answer must be a positive number
+    :postcondition: creates a term string and its value
+    :return: [value, term string] list
+
+    >>> print(factorial_term(5)  # doctest: +SKIP
+    [120.0, 'x!']
+    >>> print(factorial_term(4))  # doctest: +SKIP
+    [144.0, '6x!']
+    """
     term = randint(1, 10)
 
     try:
@@ -581,6 +698,19 @@ def factorial_term(answer):
 
 
 def x_raised_to_power_term(answer):
+    """
+    Generate a term with x raised to a power.
+
+    :param answer: number representing the answer
+    :precondition: answer must be a positive number
+    :postcondition: creates a term string and its value
+    :return: [value, term string] list
+
+    >>> print(x_raised_to_power_term(5))  # doctest: +SKIP
+    [75, '3x^2']
+    >>> print(x_raised_to_power_term(10))  # doctest: +SKIP
+    [1000, '10x^3']
+    """
     term1 = randint(1, 10)
     term2 = randint(2, 10)
 
@@ -591,6 +721,19 @@ def x_raised_to_power_term(answer):
 
 
 def term_raised_to_x_term(answer):
+    """
+    Generate a term with a base raised to x.
+
+    :param answer: number representing the answer
+    :precondition: answer must be a positive number
+    :postcondition: creates a term string and its value
+    :return: [value, term string] list
+
+    >>> print(term_raised_to_x_term(5))  # doctest: +SKIP
+    [3125, '5^x']
+    >>> print(term_raised_to_x_term(10))  # doctest: +SKIP
+    [1024, '2^x']
+    """
     term = randint(2, 10)
     
     value = term ** answer
@@ -600,6 +743,19 @@ def term_raised_to_x_term(answer):
 
 
 def simple_term(answer):
+    """
+    Generate a simple term with x.
+
+    :param answer: number representing the answer
+    :precondition: answer must be a positive number
+    :postcondition: creates a term string and its value
+    :return: [value, term string] list
+
+    >>> print(simple_term(5))  # doctest: +SKIP
+    [5, 'x']
+    >>> print(simple_term(10))  # doctest: +SKIP
+    [10, '2x']
+    """
     term = randint(1, 10)
 
     value = term * answer
@@ -609,6 +765,19 @@ def simple_term(answer):
 
 
 def generate_term3(term1_value, term2_value, has_solution):
+    """
+    Generate a third term with a sign and a value.
+
+    :param term1_value: number representing the value of the first term
+    :param term2_value: number representing the value of the second term
+    :param has_solution: boolean indicating if the problem has a solution
+    :precondition: term1_value and term2_value must be numbers
+    :postcondition: creates a term string and its value
+    :return: [value, term string with sign] list
+
+    >>> print(generate_term3(5.0, 10.0, True))
+    [-15.0, '- 15.00']
+    """
     if has_solution:
         value = 0 - term1_value - term2_value
         sign = "+" if value == abs(value) else "-"
@@ -619,6 +788,17 @@ def generate_term3(term1_value, term2_value, has_solution):
 
 
 def extreme_diophantine_problem():
+    """
+    Generate an extreme diophantine problem.
+    
+    :precondition: none
+    :postcondition: creates a problem string and its solution
+    :return: (problem string, answer) tuple by default, None if the problem is unsolvable
+
+    >>> problem, answer = extreme_diophantine_problem()        # doctest: +SKIP
+    >>> isinstance(problem, str) and isinstance(answer, float) # doctest: +SKIP
+    True  # Example: x! + 5^x - 15 = 0, 1.619...
+    """
     answer = random.uniform(-10, 10)
     terms = [factorial_term(answer), x_raised_to_power_term(answer), term_raised_to_x_term(answer), simple_term(answer)]
     signs = ("+", "-")
@@ -639,6 +819,17 @@ def extreme_diophantine_problem():
 
 
 def get_problem(current_area):
+    """
+    Generate a problem based on the current area.
+
+    :param current_area: string representing the current area
+    :precondition: current_area must be a valid area name
+    :postcondition: creates a problem string and its solution
+    :return: (problem string, answer, hint) tuple
+
+    >>> print(get_problem("Entrance"))  # doctest: +SKIP
+    ('1 + 2 + 3 = ?', 6, 'Tip: Add up the significant digits, while keeping track of their signs')
+    """
     problem = None
     answer = None
     hint = None
@@ -686,6 +877,27 @@ def get_problem(current_area):
 
 
 def get_timed_answer(thinking_time, problem=None, has_calculator=False):
+    """
+    Get user's answer to a given problem within a time limit.
+
+    :param thinking_time: amount of seconds given for the user to answer
+    :param problem: string containing the problem, used for when the user has a calculator
+    :param has_calculator: boolean indicating if the user has a calculator
+    :precondition: thinking_time must be positive number
+    :postcondition: returns user's answer if provided within time limit, or None if time expired, or "critical" if invalid input
+    :return: float for most cases, dict for when the user has a calculator, None if time expired, "critical" if invalid input
+
+    >>> doctest_answer = get_timed_answer(8)  # doctest: +SKIP
+    >>> isinstance(doctest_answer, float)  # doctest: +SKIP
+    True
+    >>> doctest_answer = get_timed_answer(10, "2+2", True)  # doctest: +SKIP
+    >>> isinstance(doctest_answer, dict) and "answer" in doctest_answer  # doctest: +SKIP
+    True
+    >>> doctest_answer = get_timed_answer(0)  # doctest: +SKIP
+    None  # for no answer given in time
+    >>> doctest_answer = get_timed_answer(10)  # doctest: +SKIP
+    'critical'  # for invalid input
+    """
     try:
         end_time = time() + thinking_time
         if has_calculator:
@@ -707,6 +919,21 @@ def get_timed_answer(thinking_time, problem=None, has_calculator=False):
 
 
 def generate_opponent_guess(correct_answer):
+    """
+    Generate an opponent's guess.
+
+    :param correct_answer: number or tuple of numbers representing solutions
+    :precondition: correct_answer must be a number or a tuple of numbers
+    :postcondition: creates a range around one of the answers as a hint
+    :return: tuple of (min_value, max_value)
+
+    >>> opponent_answer = generate_opponent_guess(10)
+    >>> 4 <= opponent_answer <= 16
+    True
+    >>> opponent_answer = generate_opponent_guess((5, 10))  # Multiple solutions
+    >>> -1 <= opponent_answer <= 16
+    True
+    """
     if correct_answer is None:
         return None
     elif isinstance(correct_answer, tuple):
@@ -721,6 +948,21 @@ def generate_opponent_guess(correct_answer):
     
 
 def generate_answer_range(correct_answer):
+    """
+    Generate a range that contains the correct answer.
+
+    :param correct_answer: number or tuple of numbers representing solutions
+    :precondition: correct_answer must be a number or a tuple of numbers
+    :postcondition: creates a range around one of the answers as a hint
+    :return: tuple of (min_value, max_value)
+
+    >>> range_min, range_max = generate_answer_range(10)
+    >>> -5 <= range_min <= range_max <= 25
+    True
+    >>> range_min, range_max = generate_answer_range((5, 10))  # Multiple solutions
+    >>> -10 <= range_min <= range_max <= 25
+    True
+    """
     if isinstance(correct_answer, tuple):
         chosen_solution = random.choice(correct_answer)
         delta = max(abs(chosen_solution) * 0.125, 5)
@@ -733,6 +975,21 @@ def generate_answer_range(correct_answer):
 
 
 def handle_duel_result(character, player_answer, opponent_guess, correct_answer, opponent_stats):
+    """
+    Handle the result of a duel.
+    
+    :param character: dictionary containing character's stats
+    :param player_answer: float or dict or None representing the player's answer
+    :param opponent_guess: float representing the opponent's guess
+    :param correct_answer: number or tuple of numbers representing the correct answer
+    :param opponent_stats: dictionary containing opponent's stats
+    :precondition: all parameters must be valid
+    :postcondition: handles the result of a duel
+    :return: boolean indicating if the player won the duel
+
+    >>> handle_duel_result(character, 5.21, 6.9, 4.2, opponent_stats)  # doctest: +SKIP
+    True
+    """
     if player_answer == "critical":
         critical_damage = opponent_stats["damage"] * 2
         print(f"Invalid input! Opponent deals CRITICAL damage! (-{critical_damage} mood)")
@@ -780,6 +1037,15 @@ def handle_duel_result(character, player_answer, opponent_guess, correct_answer,
 
 
 def math_duel(character, current_area):
+    """
+    Conduct a math duel.
+    
+    :param character: dictionary containing character's stats
+    :param current_area: string representing the current area
+    :precondition: character must be properly initialized, current_area must be a valid area name
+    :postcondition: conducts a math duel
+    :return: boolean indicating if the player won the duel
+    """
     print("MATH DUEL")
     opponent_stats = get_opponent_stats(current_area)
 
@@ -819,6 +1085,21 @@ def math_duel(character, current_area):
 
 
 def level_up(character, experience):
+    """
+    Level up the character and increase their stats.
+
+    :param character: dictionary containing character's stats
+    :param experience: float representing the amount of experience gained
+    :precondition: character must be properly initialized, experience must be a positive number
+    :postcondition: levels up the character and increases their stats
+    :return: None
+
+    >>> character = {"level": 2.5, "max_mood": 20, "damage": 5}
+    >>> level_up(character, 1.8)  # doctest: +SKIP
+    Level Up! You are now level 4!
+    Max mood increased to 32!
+    Damage increased to 8!
+    """
     old_level = math.floor(character["level"])
     character["level"] += experience
     new_level = math.floor(character["level"])
@@ -833,14 +1114,59 @@ def level_up(character, experience):
 
 
 def is_alive(character):
+    """
+    Check if the character is still alive.
+
+    :param character: dictionary containing character's stats
+    :precondition: character must have a mood stat
+    :postcondition: checks if the character is alive
+    :return: boolean indicating if the character is alive
+
+    >>> is_alive({"mood": 5})
+    True
+    >>> is_alive({"mood": 0})
+    False
+    """
     return character["mood"] > 0
 
 
 def is_goal(character):
+    """
+    Check if the character has reached the goal position.
+
+    :param character: dictionary containing character's stats
+    :precondition: character must have row and column stats
+    :postcondition: checks if the character has reached the goal position
+    :return: boolean indicating if the character has reached the goal position
+
+    >>> is_goal({"row": 6, "column": 6})
+    True
+    >>> is_goal({"row": 5, "column": 6})
+    False
+    """
     return character["row"] == 6 and character["column"] == 6
 
 
 def get_encounter_probability(character, current_area):
+    """
+    Calculate probability of encountering an opponent in current area.
+
+    :param character: dictionary containing character's level and cooldown
+    :param current_area: string name of the current area
+    :precondition: character must have level and cooldown attributes
+    :postcondition: calculates encounter probability based on area difficulty and character level
+    :return: integer between 1 and 5 representing encounter probability
+
+    >>> char = {"level": 2.2, "opponent_encounter_cooldown": 4}
+    >>> get_encounter_probability(char, "Entrance")  # Easiest area, 1 in 4 chance
+    4
+    >>> char = {"level": 2.2, "opponent_encounter_cooldown": 4}
+    >>> get_encounter_probability(char, "Number Theory")  # Hardest area, 1 in 1 chance
+    1
+    >>> char = {"level": 2.2, "opponent_encounter_cooldown": 4}
+    >>> get_encounter_probability(char, "Algebra")  # Mid-level area, 1 in 2 chance
+    2
+    """
     area_difficulty = {
         "Entrance": 1,
         "Arithmetics": 2,
@@ -851,10 +1177,15 @@ def get_encounter_probability(character, current_area):
     
     difficulty = area_difficulty[current_area]
     level = math.floor(character["level"])
-    return max(1, min(5, character["opponent_encounter_cooldown"] + (level // 2) - (difficulty // 2)))
+    return max(1, min(5, character["opponent_encounter_cooldown"] + (level // 2) - difficulty))
 
 
 def print_intro():
+    """
+    Print the introduction to the game.
+
+    :return: None
+    """
     colors = {
         "blue": "\033[44m",
         "green": "\033[42m",
@@ -893,6 +1224,22 @@ Good luck and have fun!
 
 
 def print_area_description(area_name, first_visit=False):
+    """
+    Print the description of an area.
+
+    :param area_name: string representing the area name
+    :param first_visit: boolean indicating if it's the first visit to the area
+    :precondition: area_name must be a valid area name
+    :postcondition: prints the description of the area
+    :return: None
+
+    >>> print_area_description("Entrance", True)
+    <BLANKLINE>
+    You stand at the beginning of your mathematical journey.
+    >>> print_area_description("Entrance", False)
+    <BLANKLINE>
+    The familiar territory of addition and subtraction surrounds you.
+    """
     descriptions = {
         "Entrance": [
             "\nYou stand at the beginning of your mathematical journey.",
@@ -920,6 +1267,11 @@ def print_area_description(area_name, first_visit=False):
 
 
 def print_duel_start():
+    """
+    Select and print the initial message of a duel.
+
+    :return: None
+    """
     duel_starts = [
         "\nA mathematical entity materializes before you...",
         "\nThe air crackles with mathematical energy as a challenger appears...",
@@ -931,6 +1283,21 @@ def print_duel_start():
 
 
 def print_item_found(item_name):
+    """
+    Print the message when an item is found.
+
+    :param item_name: string representing the item name
+    :precondition: item_name must be a valid item name
+    :postcondition: prints the message when an item is found
+    :return: None
+
+    >>> print_item_found("Pen and paper")
+    <BLANKLINE>
+    You have found a trusty pen and paper! Now you'll have more time to solve problems.
+    >>> print_item_found("Textbook")
+    <BLANKLINE>
+    An ancient mathematical tome! Its pages contain helpful tips for solving problems.
+    """
     item_messages = {
         "Pen and paper": "\nYou have found a trusty pen and paper! Now you'll have more time to solve problems.",
         "Textbook": "\nAn ancient mathematical tome! Its pages contain helpful tips for solving problems.",
@@ -941,6 +1308,15 @@ def print_item_found(item_name):
 
 
 def print_outro(character, victory=True):
+    """
+    Print the outro message based on the character's victory status.
+
+    :param character: dictionary containing character's stats
+    :param victory: boolean indicating if the character won the game
+    :precondition: character must have name, level, steps_taken, opponents_bested, mood, and max_mood stats
+    :postcondition: prints the outro message based on the character's victory status
+    :return: None
+    """
     if victory:
         print(f"""
 ╔════════════════════════════════════════════════════════════════════╗
