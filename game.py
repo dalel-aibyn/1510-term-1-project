@@ -93,7 +93,7 @@ def make_board(columns=7, rows=7):
 
 def has_adjacent_item(position, items_locations):
     """
-    Check if there is an item in any adjacent position.
+    Determine if there is an item in any adjacent position.
 
     :param position: tuple of (column, row) representing current position
     :param items_locations: dictionary mapping positions to item names
@@ -150,7 +150,7 @@ def get_tier_positions(tier):
 
 def place_tier_items(tier_positions, item_name, item_quantity, items_locations):
     """
-    Attempts to place items in non-adjacent positions within a tier.
+    Attempt to place items in non-adjacent positions within a tier.
 
     :param tier_positions: list of tuples containing valid (column, row) positions
     :param item_name: string name of the item to place
@@ -182,7 +182,7 @@ def place_tier_items(tier_positions, item_name, item_quantity, items_locations):
 
 def add_items_to_board():
     """
-    Puts the items on the game board.
+    Put the items on the game board.
 
     :precondition: none
     :postcondition: creates a dictionary with items placed
@@ -219,6 +219,23 @@ def add_items_to_board():
 
 
 def make_character():
+    """
+    Create a new character with initial stats.
+
+    :precondition: none
+    :postcondition: creates a dictionary with character's initial state
+    :return: dictionary containing character stats
+
+    >>> character = make_character()
+    >>> character["mood"]
+    20
+    >>> character["inventory"]["Pen and paper"]
+    False
+    >>> character["areas_visited"]["Entrance"]
+    True
+    >>> character["column"] == 0 and character["row"] == 6  # Starting position
+    True
+    """
     name = input("Enter your character's name: ")
     inventory = {
         "Pen and paper": False,
@@ -246,7 +263,6 @@ def make_character():
         "name": name,
         "column": 0,
         "row": 6,
-        "Current HP": 5,
         "mood": 20,
         "max_mood": 20,
         "damage": 3,
@@ -262,6 +278,22 @@ def make_character():
 
 
 def get_user_choice():
+    """
+    Get and validate user's movement direction.
+
+    :precondition: none
+    :postcondition: returns valid movement direction
+    :return: tuple of (row_delta, column_delta) representing movement direction
+
+    >>> get_user_choice()  # n
+    (-1, 0)
+    >>> get_user_choice()  # s
+    (1, 0)
+    >>> get_user_choice()  # e
+    (0, 1)
+    >>> get_user_choice()  # w
+    (0, -1)
+    """
     valid_inputs = {'n': (-1, 0), 's': (1, 0), 'e': (0, 1), 'w': (0, -1)}
     while True:
         choice = input("Enter direction (n/s/e/w): ").lower()
@@ -271,6 +303,23 @@ def get_user_choice():
 
 
 def validate_move(board, character, direction):
+    """
+    Validate if a move stays within the board boundaries.
+
+    :param board: dictionary containing board information
+    :param character: dictionary containing character's current position
+    :param direction: tuple of (row_delta, column_delta) for movement
+    :precondition: board must be properly initialized with max_x and max_y
+    :postcondition: determines if the move stays within board boundaries
+    :return: direction tuple if move is valid, False otherwise
+
+    >>> board = {"max_x": 7, "max_y": 7}
+    >>> char = {"row": 0, "column": 0}
+    >>> validate_move(board, char, (-1, 0))  # Invalid move north
+        False
+    >>> validate_move(board, char, (0, 1))   # Move east
+    (0, 1)
+    """
     delta_row, delta_column = direction
     new_row = character["row"] + delta_row
     new_column = character["column"] + delta_column
@@ -764,7 +813,7 @@ def print_intro():
     print(f"""
 ╔════════════════════════════════════════════════════════════════════╗
 ║                  WELCOME TO THE MATHEMATICS REALM                  ║
-╚════════════════════════════════════════════════════════════════════╝
+╚═════════════════════════════════���══════════════════════════════════╝
           
 You find yourself in the Mathematics Realm, a realm where numbers and expressions reign supreme.
 Your goal is to reach the end by navigating through increasingly challenging mathematical territories.
