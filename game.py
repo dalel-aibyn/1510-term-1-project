@@ -679,23 +679,18 @@ def factorial_term(answer):
     """
     Generate a factorial term.
 
-    :param answer: number representing the answer
-    :precondition: answer must be a positive number
+    :param answer: integer representing the answer
+    :precondition: answer must be a positive integer
     :postcondition: creates a term string and its value
     :return: [value, term string] list
 
-    >>> print(factorial_term(5)) # doctest: +SKIP
-    [120.0, 'x!']
+    >>> print(factorial_term(5))  # doctest: +SKIP
+    [120, 'x!']
     >>> print(factorial_term(4))  # doctest: +SKIP
-    [144.0, '6x!']
+    [144, '6x!']
     """
     term = randint(1, 10)
-
-    try:
-        value = term * math.gamma(answer + 1)
-    except ValueError:
-        value = float('inf')
-    
+    value = term * math.factorial(answer)
     term_string = "x!" if term == 1 else f"{term}x!"
     return [value, term_string]
 
@@ -704,8 +699,8 @@ def x_raised_to_power_term(answer):
     """
     Generate a term with x raised to a power.
 
-    :param answer: number representing the answer
-    :precondition: answer must be a positive number
+    :param answer: integer representing the answer
+    :precondition: answer must be a positive integer
     :postcondition: creates a term string and its value
     :return: [value, term string] list
 
@@ -716,9 +711,7 @@ def x_raised_to_power_term(answer):
     """
     term1 = randint(1, 10)
     term2 = randint(2, 10)
-
     value = term1 * (answer ** term2)
-
     term_string = f"x^{term2}" if term1 == 1 else f"{term1}x^{term2}"
     return [value, term_string]
 
@@ -727,8 +720,8 @@ def term_raised_to_x_term(answer):
     """
     Generate a term with a base raised to x.
 
-    :param answer: number representing the answer
-    :precondition: answer must be a positive number
+    :param answer: integer representing the answer
+    :precondition: answer must be a positive integer
     :postcondition: creates a term string and its value
     :return: [value, term string] list
 
@@ -738,9 +731,7 @@ def term_raised_to_x_term(answer):
     [1024, '2^x']
     """
     term = randint(2, 10)
-    
     value = term ** answer
-
     term_string = f"{term}^x"
     return [value, term_string]
 
@@ -749,8 +740,8 @@ def simple_term(answer):
     """
     Generate a simple term with x.
 
-    :param answer: number representing the answer
-    :precondition: answer must be a positive number
+    :param answer: integer representing the answer
+    :precondition: answer must be a positive integer
     :postcondition: creates a term string and its value
     :return: [value, term string] list
 
@@ -760,65 +751,56 @@ def simple_term(answer):
     [10, '2x']
     """
     term = randint(1, 10)
-
     value = term * answer
-
     term_string = "x" if term == 1 else f"{term}x"
     return [value, term_string]
 
 
-def generate_term3(term1_value, term2_value, has_solution):
+def generate_term3(term1_value, term2_value):
     """
     Generate a third term with a sign and a value.
 
-    :param term1_value: number representing the value of the first term
-    :param term2_value: number representing the value of the second term
-    :param has_solution: boolean indicating if the problem has a solution
-    :precondition: term1_value and term2_value must be numbers
+    :param term1_value: integer representing the value of the first term
+    :param term2_value: integer representing the value of the second term
+    :precondition: term1_value and term2_value must be integers
     :postcondition: creates a term string and its value
     :return: [value, term string with sign] list
 
-    >>> print(generate_term3(5.0, 10.0, True))
-    [-15.0, '- 15.00']
+    >>> print(generate_term3(5, 10))
+    [-15, '- 15']
     """
-    if has_solution:
-        value = 0 - term1_value - term2_value
-        sign = "+" if value == abs(value) else "-"
-        term3_string = f"{sign} {abs(value):.2f}"
-        return [value, term3_string]
-    else:
-        return [float('inf'), "+ 69^420"]  # this will like never happen, but just in case
+    value = 0 - term1_value - term2_value
+    sign = "+" if value >= 0 else "-"
+    term3_string = f"{sign} {abs(value)}"
+    return [value, term3_string]
 
 
 def extreme_diophantine_problem():
     """
-    Generate an extreme diophantine problem.
+    Generate an extreme diophantine problem with integer solutions.
     
     :precondition: none
-    :postcondition: creates a problem string and its solution
-    :return: (problem string, answer) tuple by default, None if the problem is unsolvable
+    :postcondition: creates a problem string and its integer solution
+    :return: (problem string, answer) tuple
 
-    >>> doctest_problem, doctest_answer = extreme_diophantine_problem()        # doctest: +SKIP
-    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, float) # doctest: +SKIP
-    True  # Example: x! + 5^x - 15 = 0, 1.619...
+    >>> doctest_problem, doctest_answer = extreme_diophantine_problem()
+    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, int)
+    True
     """
-    answer = random.uniform(-10, 10)
-    terms = [factorial_term(answer), x_raised_to_power_term(answer), term_raised_to_x_term(answer), simple_term(answer)]
+    answer = randint(1, 10)
+    terms = [factorial_term(answer), x_raised_to_power_term(answer), 
+             term_raised_to_x_term(answer), simple_term(answer)]
     signs = ("+", "-")
 
-    has_solution = False
     term1, term2 = random.sample(terms, 2)
-    if term1[0] != float('inf') and term2[0] != float('inf'):
-        has_solution = True
-
     sign = random.choice(signs)
     if sign == "-":
         term2[0] *= -1
 
-    term3 = generate_term3(term1[0], term2[0], has_solution)
+    term3 = generate_term3(term1[0], term2[0])
 
     problem = f"{term1[1]} {sign} {term2[1]} {term3[1]} = 0"
-    return problem, answer if has_solution else None  # on a rare occasion that the problem is unsolvable
+    return problem, answer
 
 
 def get_problem(current_area):
@@ -984,7 +966,7 @@ def handle_duel_result(character, player_answer, opponent_guess, correct_answer,
     Handle the result of a duel.
     
     :param character: dictionary containing character's stats
-    :param player_answer: float or dict or None representing the player's answer
+    :param player_answer: float or dict representing the player's answer
     :param opponent_guess: float representing the opponent's guess
     :param correct_answer: number or tuple of numbers representing the correct answer
     :param opponent_stats: dictionary containing opponent's stats
@@ -1000,6 +982,7 @@ def handle_duel_result(character, player_answer, opponent_guess, correct_answer,
         print(f"Invalid input! Opponent deals CRITICAL damage! (-{critical_damage} mood)")
         character["mood"] -= critical_damage
         return False
+        
     if player_answer is None:
         print(f"Opponent guessed: {opponent_guess:.2f}")
         print(f"You didn't answer in time! You take damage! (-{opponent_stats['damage']} mood)")
@@ -1014,13 +997,6 @@ def handle_duel_result(character, player_answer, opponent_guess, correct_answer,
         print(f"You typed the problem incorrectly! You take damage! (-{opponent_stats['damage']} mood)")
         character["mood"] -= opponent_stats["damage"]
         return False
-
-    # For unsolvable problems
-    if correct_answer is None:
-        print("\nThe problem was particularly challenging!")
-        print(f"You've provided a valid answer! Opponent takes damage! (-{character['damage']} mood)")
-        opponent_stats["mood"] -= character["damage"]
-        return True
 
     if isinstance(correct_answer, tuple):
         player_difference = min(abs(player_answer - solution) for solution in correct_answer)
