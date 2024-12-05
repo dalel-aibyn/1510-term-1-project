@@ -1,5 +1,5 @@
 from unittest import TestCase
-import game
+from game import get_encounter_probability
 
 
 class Test(TestCase):
@@ -7,7 +7,7 @@ class Test(TestCase):
         character = {"level": 1.2, "opponent_encounter_cooldown": 3}
         expected_probability = 2
 
-        actual_probability = game.get_encounter_probability(character, "Entrance")
+        actual_probability = get_encounter_probability(character, "Entrance")
 
         self.assertEqual(expected_probability, actual_probability)
 
@@ -15,7 +15,7 @@ class Test(TestCase):
         character = {"level": 8.7, "opponent_encounter_cooldown": 4}
         expected_probability = 5
 
-        actual_probability = game.get_encounter_probability(character, "Entrance")
+        actual_probability = get_encounter_probability(character, "Entrance")
 
         self.assertEqual(expected_probability, actual_probability)
 
@@ -23,7 +23,7 @@ class Test(TestCase):
         character = {"level": 1.5, "opponent_encounter_cooldown": 4}
         expected_probability = 1
 
-        actual_probability = game.get_encounter_probability(character, "Number Theory")
+        actual_probability = get_encounter_probability(character, "Number Theory")
 
         self.assertEqual(expected_probability, actual_probability)
 
@@ -31,7 +31,7 @@ class Test(TestCase):
         character = {"level": 4.2, "opponent_encounter_cooldown": 3}
         expected_probability = 2
 
-        actual_probability = game.get_encounter_probability(character, "Algebra")
+        actual_probability = get_encounter_probability(character, "Algebra")
 
         self.assertEqual(expected_probability, actual_probability)
 
@@ -39,7 +39,7 @@ class Test(TestCase):
         character = {"level": 3.8, "opponent_encounter_cooldown": 5}
         expected_probability = 2
 
-        actual_probability = game.get_encounter_probability(character, "Calculus")
+        actual_probability = get_encounter_probability(character, "Calculus")
 
         self.assertEqual(expected_probability, actual_probability)
 
@@ -47,7 +47,7 @@ class Test(TestCase):
         character = {"level": 2.5, "opponent_encounter_cooldown": 1}
         expected_probability = 1
 
-        actual_probability = game.get_encounter_probability(character, "Arithmetics")
+        actual_probability = get_encounter_probability(character, "Arithmetics")
 
         self.assertEqual(expected_probability, actual_probability)
 
@@ -62,5 +62,5 @@ class Test(TestCase):
         }
 
         for area, expected in expected_probabilities.items():
-            actual = game.get_encounter_probability(character, area)
-            self.assertEqual(expected, actual, f"Failed for area: {area}")
+            actual = get_encounter_probability(character, area)
+            self.assertEqual(expected, actual)
