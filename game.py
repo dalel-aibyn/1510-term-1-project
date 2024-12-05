@@ -168,7 +168,7 @@ def place_tier_items(tier_positions, item_name, item_quantity, items_locations):
     attempts = 0
     max_attempts = 69  # to prevent infinite loop
 
-    while items_placed < item_quantity and attempts < max_attempts and tier_positions:
+    while tier_positions and items_placed < item_quantity and attempts < max_attempts:
         position = random.choice(tier_positions)
 
         if not has_adjacent_item(position, items_locations):
