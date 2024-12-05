@@ -59,4 +59,4 @@ class Test(TestCase):
         self.assertFalse(character["opponents_encountered"]["Arithmetics"])
         self.assertFalse(character["opponents_encountered"]["Algebra"])
         self.assertFalse(character["opponents_encountered"]["Calculus"])
-        self.assertFalse(character["opponents_encountered"]["Number Theory"]) 
+        self.assertFalse(character["opponents_encountered"]["Number Theory"])
