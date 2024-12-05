@@ -3,46 +3,61 @@ from game import make_board
 
 
 class Test(TestCase):
-    def test_make_board_small(self):
-        columns = 2
-        rows = 2
-        goal_pos = (1, 1)
-        expected_board = {'goal_pos': goal_pos, 'max_x': 2, 'max_y': 2, goal_pos: "GOAL"}
-        actual_board = make_board(columns, rows)
-        self.assertEqual(expected_board['goal_pos'], actual_board['goal_pos'])
-        self.assertEqual(expected_board['max_x'], actual_board['max_x'])
-        self.assertEqual(expected_board['max_y'], actual_board['max_y'])
-        self.assertEqual(expected_board[goal_pos], actual_board[goal_pos])
+    def test_make_board_correct_dimensions(self):
+        """Test board dimensions are correct."""
+        expected_x = 7
+        expected_y = 7
+        board = make_board()
+        self.assertEqual(expected_x, board["max_x"])
+        self.assertEqual(expected_y, board["max_y"])
 
-    def test_make_board_medium(self):
-        columns = 5
-        rows = 7
-        goal_pos = (4, 6)
-        expected_board = {'goal_pos': goal_pos, 'max_x': 5, 'max_y': 7, goal_pos: "GOAL"}
-        actual_board = make_board(columns, rows)
-        self.assertEqual(expected_board['goal_pos'], actual_board['goal_pos'])
-        self.assertEqual(expected_board['max_x'], actual_board['max_x'])
-        self.assertEqual(expected_board['max_y'], actual_board['max_y'])
-        self.assertEqual(expected_board[goal_pos], actual_board[goal_pos])
+    def test_make_board_entrance_position(self):
+        """Test entrance position has correct properties."""
+        board = make_board()
+        expected_name = "Entrance"
+        expected_color = "blue"
+        
+        actual_name = board[(0, 6)]["tier_name"]
+        actual_color = board[(0, 6)]["tier_color"]
+        
+        self.assertEqual(expected_name, actual_name)
+        self.assertEqual(expected_color, actual_color)
 
-    def test_make_board_big(self):
-        columns = 15
-        rows = 12
-        goal_pos = (14, 11)
-        expected_board = {'goal_pos': goal_pos, 'max_x': 15, 'max_y': 12, goal_pos: "GOAL"}
-        actual_board = make_board(columns, rows)
-        self.assertEqual(expected_board['goal_pos'], actual_board['goal_pos'])
-        self.assertEqual(expected_board['max_x'], actual_board['max_x'])
-        self.assertEqual(expected_board['max_y'], actual_board['max_y'])
-        self.assertEqual(expected_board[goal_pos], actual_board[goal_pos])
+    def test_make_board_goal_position(self):
+        """Test goal position has correct properties."""
+        board = make_board()
+        expected_name = "Goal"
+        expected_color = "purple"
+        
+        actual_name = board[(6, 6)]["tier_name"]
+        actual_color = board[(6, 6)]["tier_color"]
+        
+        self.assertEqual(expected_name, actual_name)
+        self.assertEqual(expected_color, actual_color)
 
-    def test_make_board_huge(self):
-        columns = 69
-        rows = 42
-        goal_pos = (68, 41)
-        expected_board = {'goal_pos': goal_pos, 'max_x': 69, 'max_y': 42, goal_pos: "GOAL"}
-        actual_board = make_board(columns, rows)
-        self.assertEqual(expected_board['goal_pos'], actual_board['goal_pos'])
-        self.assertEqual(expected_board['max_x'], actual_board['max_x'])
-        self.assertEqual(expected_board['max_y'], actual_board['max_y'])
-        self.assertEqual(expected_board[goal_pos], actual_board[goal_pos])
+    def test_make_board_sample_positions(self):
+        """Test various positions have correct tier properties."""
+        board = make_board()
+        test_positions = [
+            ((3, 1), "Arithmetics", "green"),
+            ((4, 2), "Algebra", "yellow"),
+            ((4, 3), "Calculus", "orange"),
+            ((5, 5), "Number Theory", "red")
+        ]
+        
+        for pos, expected_name, expected_color in test_positions:
+            actual_name = board[pos]["tier_name"]
+            actual_color = board[pos]["tier_color"]
+            self.assertEqual(expected_name, actual_name)
+            self.assertEqual(expected_color, actual_color)
+
+    def test_make_board_invalid_dimensions(self):
+        """Test board creation with invalid dimensions raises ValueError."""
+        with self.assertRaises(ValueError):
+            make_board(6, 7)
+            
+        with self.assertRaises(ValueError):
+            make_board(7, 6)
+            
+        with self.assertRaises(ValueError):
+            make_board(8, 8)
