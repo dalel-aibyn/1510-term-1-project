@@ -2,8 +2,8 @@
 AIBYN DALEL
 A01311270
 """
-import random
 from random import randint
+from random import random
 from time import sleep
 from time import time
 import math
@@ -601,8 +601,9 @@ def hard_log_problem():
     :postcondition: creates a problem string and its solution
     :return: (problem string, answer) tuple
 
-    >>> doctest_problem, doctest_answer = hard_log_problem()  # Example: log2(5^3) + log2(5^5) = ?, 18.575...
-    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, int)
+    >>> doctest_problem, doctest_answer = hard_log_problem()
+    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, int)  # Example: log2(5^3) + log2(5^5) = ?,
+                                                                                         18.575...
     True
     """
     base = random.choice([2, 3, 5, 10])
@@ -628,8 +629,8 @@ def quadratic_problem():
     :postcondition: creates a problem string and its solutions
     :return: (problem string, answer) tuple
 
-    >>> doctest_problem, doctest_answer = quadratic_problem()  # Example: x² - 3x + 2 = 0, (1, 2)
-    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, tuple) and len(doctest_answer) == 2
+    >>> doctest_problem, doctest_answer = quadratic_problem()
+    >>> isinstance(doctest_problem, str) and isinstance(doctest_answer, tuple) and len(doctest_answer) == 2  # Example: x² - 3x + 2 = 0, (1, 2)
     True
     """
     solution1 = randint(-10, 10)
