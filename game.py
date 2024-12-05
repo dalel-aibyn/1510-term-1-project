@@ -330,6 +330,23 @@ def validate_move(board, character, direction):
 
 
 def move_character(character, direction):
+    """
+    Update character's position based on movement direction.
+
+    :param character: dictionary containing character's current position and stats
+    :param direction: tuple of (row_delta, column_delta) for movement
+    :precondition: character must be a valid character dictionary, direction must be a valid movement tuple
+    :postcondition: updates character's position and increments steps taken
+    :return: None
+
+    >>> char = {"row": 0, "column": 6, "steps_taken": 0}
+    >>> move_character(char, (-1, 0))
+    >>> char["row"], char["column"], char["steps_taken"]
+    (6, 0, 1)
+    >>> move_character(char, (0, 1))
+    >>> char["row"], char["column"], char["steps_taken"]
+    (6, 1, 2)
+    """
     delta_row, delta_column = direction
     character["row"] += delta_row
     character["column"] += delta_column
@@ -337,6 +354,21 @@ def move_character(character, direction):
 
 
 def print_board(board, items_locations, character_pos):
+    """
+    Display the game board.
+
+    :param board: dictionary containing board information
+    :param items_locations: dictionary of items locations on the board
+    :param character_pos: tuple of (column, row) for character position
+    :precondition: board and items_locations must be properly initialized dictionaries
+    :postcondition: prints formatted board to console
+    :return: None
+
+    >>> test_board = {(0, 0): {"tier_name": "Arithmetics", "tier_color": "green"}, 
+                      "max_x": 1, "max_y": 1}        # doctest: +SKIP
+    >>> test_items = {(1, 0): "Manual"}              # doctest: +SKIP
+    >>> print_board(test_board, test_items, (0, 1))  # doctest: +SKIP
+    """
     colors = {
         "blue": "\033[44m",
         "green": "\033[42m",
@@ -378,6 +410,30 @@ def print_board(board, items_locations, character_pos):
 
 
 def handle_item_pickup(character, items_locations, position):
+    """
+    Handle the item pickup event.
+
+    :param character: dictionary containing character's inventory
+    :param items_locations: dictionary of items locations on the board
+    :param position: tuple of (column, row) representing current position
+    :precondition: character and items_locations must be properly initialized dictionaries
+    :postcondition: updates character inventory and items_locations if item is picked up
+    :return: boolean indicating if an item event occurred
+
+    >>> char = {"inventory": {"Textbook": False}}
+    >>> items = {(1, 1): "Textbook"}
+    >>> handle_item_pickup(char, items, (1, 1))
+    True
+    >>> char["inventory"]["Textbook"]
+    True
+    >>> (1, 1) in items
+    False
+    >>> handle_item_pickup(char, items, (1, 1))  # No item at position
+    False
+    >>> items = {(2, 2): "Textbook"}
+    >>> handle_item_pickup(char, items, (2, 2))  # Already have item
+    True
+    """
     if position in items_locations:
         item = items_locations[position]
         if not character["inventory"][item]:
@@ -813,7 +869,7 @@ def print_intro():
     print(f"""
 ╔════════════════════════════════════════════════════════════════════╗
 ║                  WELCOME TO THE MATHEMATICS REALM                  ║
-╚═════════════════════════════════���══════════════════════════════════╝
+╚════════════════════════════════════════════════════════════════════╝
           
 You find yourself in the Mathematics Realm, a realm where numbers and expressions reign supreme.
 Your goal is to reach the end by navigating through increasingly challenging mathematical territories.
