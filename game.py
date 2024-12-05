@@ -10,6 +10,23 @@ import math
 
 
 def determine_tier(column, row):
+    """
+    Determine the tier of a given position on the game board.
+
+    :param column: horizontal position on board (0-6)
+    :param row: vertical position on board (0-6)
+    :precondition: column and row must be integers between 0 and 6 inclusive
+    :postcondition: correctly identifies the tier of the given position
+    :return: integer representing tier (0: Entrance, 1: Arithmetics, 2: Algebra, 3: Calculus, 4: Number Theory, 5: Goal)
+    :raises ValueError: if column or row are outside the valid range
+
+    >>> determine_tier(0, 6)
+    0
+    >>> determine_tier(6, 6)
+    5
+    >>> determine_tier(4, 3)
+    3
+    """
     if not (0 <= column <= 6 and 0 <= row <= 6):
         raise ValueError("Column and row must be between 0 and 6 inclusive")
 
@@ -29,6 +46,26 @@ def determine_tier(column, row):
 
 
 def make_board(columns=7, rows=7):
+    """
+    Create the game board with specified dimensions.
+
+    :param columns: width of the board (must be 7)
+    :param rows: height of the board (must be 7)
+    :precondition: columns and rows must both be 7
+    :postcondition: creates a dictionary representing the game board with proper tiers and colors
+    :return: dictionary containing board dimensions and tile information
+    :raises ValueError: if columns or rows are not 7
+
+    >>> board = make_board()
+    >>> board["max_x"], board["max_y"]
+    (7, 7)
+    >>> board[(0, 6)]["tier_name"]
+    'Entrance'
+    >>> board[(6, 6)]["tier_name"]
+    'Goal'
+    >>> board[(4, 3)]["tier_color"]
+    'orange'
+    """
     if columns != 7 or rows != 7:
         raise ValueError("Board dimensions must be 7x7")
 
@@ -55,12 +92,29 @@ def make_board(columns=7, rows=7):
 
 
 def has_adjacent_item(position, items_locations):
+    """
+    Check if there is an item in any adjacent position.
+
+    :param position: tuple of (column, row) representing current position
+    :param items_locations: dictionary mapping positions to item names
+    :precondition: position must be a tuple of two integers
+    :postcondition: correctly identifies if any adjacent position has an item
+    :return: boolean indicating if an adjacent position has an item
+
+    >>> items = {(1, 1): "Textbook", (3, 3): "Calculator"}
+    >>> has_adjacent_item((1, 2), items)
+    True
+    >>> has_adjacent_item((0, 0), items)
+    False
+    >>> has_adjacent_item((2, 3), items)
+    True
+    """
     column, row = position
     adjacent_positions = [
-        (column, row - 1),
-        (column + 1, row),
-        (column, row + 1),
-        (column - 1, row)
+        (column, row - 1),  # North
+        (column + 1, row),  # East
+        (column, row + 1),  # South
+        (column - 1, row)   # West
     ]
 
     for adj_pos in adjacent_positions:
@@ -741,7 +795,7 @@ def print_item_found(item_name):
 def print_outro(character, victory=True):
     if victory:
         print(f"""
-╔════════════════════════════════════════════════════════════════════╗
+╔═══════════════════════════════════════════════════���════════════════╗
 ║                              VICTORY!                              ║
 ╚════════════════════════════════════════════════════════════════════╝
 
