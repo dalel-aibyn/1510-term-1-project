@@ -10,9 +10,12 @@ Ao1311270
 nybia
 
 ## Any important comments you'd like to make about your work:
-I wish I was more passionate about this project.
-Also, sorry for making it 7x7, 5x5 felt too small for my idea.
-And I won't deny that the game is insanely hard to play without a calculator.
+
+I got the idea for the project very early on. I liked it but I was more passionate about actually making the game.
+
+Sorry for making it 7x7, 5x5 felt too small for my idea.
+
+I won't deny that the game is insanely hard to play without a calculator.
 
 | satisfied? | appropriate use of ...                  | line # of example | comments                                        |
 |------------|-----------------------------------------|-------------------|-------------------------------------------------|
@@ -34,3 +37,5 @@ And I won't deny that the game is insanely hard to play without a calculator.
 | ✔️         | f-strings, format(), or old formatting  | 394               | colourful board output                          |
 
 Credit to James for this table
+
+Also, I just noticed that you don't want to type things. :\
