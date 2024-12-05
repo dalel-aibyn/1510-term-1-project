@@ -13,7 +13,7 @@ class Test(TestCase):
         self.assertFalse(actual)
 
     @patch('builtins.print')
-    def test_handle_item_pickup_new_item(self, mock_print):
+    def test_handle_item_pickup_new_item(self):
         """Test picking up a new item."""
         character = {"inventory": {"Textbook": False}}
         items = {(1, 1): "Textbook"}
@@ -26,7 +26,7 @@ class Test(TestCase):
         self.assertNotIn(position, items)
 
     @patch('builtins.print')
-    def test_handle_item_pickup_duplicate_item(self, mock_print):
+    def test_handle_item_pickup_duplicate_item(self):
         """Test attempting to pick up already owned item."""
         character = {"inventory": {"Textbook": True}}
         items = {(1, 1): "Textbook"}
@@ -38,7 +38,7 @@ class Test(TestCase):
         self.assertIn(position, items)
 
     @patch('builtins.print')
-    def test_handle_item_pickup_all_items(self, mock_print):
+    def test_handle_item_pickup_all_items(self):
         """Test picking up each type of item."""
         character = {
             "inventory": {
