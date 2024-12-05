@@ -54,4 +54,4 @@ class Test(TestCase):
         }
         position = (2, 2)
         actual = has_adjacent_item(position, items)
-        self.assertEqual(True, actual) 
+        self.assertEqual(True, actual)

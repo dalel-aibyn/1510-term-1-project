@@ -95,4 +95,4 @@ class Test(TestCase):
             determine_tier(7, 0)
             
         with self.assertRaises(ValueError):
-            determine_tier(0, 7) 
+            determine_tier(0, 7)
