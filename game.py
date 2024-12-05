@@ -16,7 +16,7 @@ def determine_tier(column, row):
     :param column: horizontal position on board (0-6)
     :param row: vertical position on board (0-6)
     :precondition: column and row must be integers between 0 and 6 inclusive
-    :postcondition: correctly identifies the tier of the given position
+    :postcondition: correctly identifiy the tier of the given position
     :return: integer representing tier (0: Entrance, 1: Arithmetics, 2: Algebra, 3: Calculus, 4: Number Theory, 5: Goal)
     :raises ValueError: if column or row are outside the valid range
 
@@ -47,10 +47,10 @@ def determine_tier(column, row):
 
 def make_board(columns=7, rows=7):
     """
-    Create the game board with specified dimensions.
+    Create a 7x7 game board.
 
-    :param columns: width of the board (must be 7)
-    :param rows: height of the board (must be 7)
+    :param columns: width of the board
+    :param rows: height of the board
     :precondition: columns and rows must both be 7
     :postcondition: creates a dictionary representing the game board with proper tiers and colors
     :return: dictionary containing board dimensions and tile information
@@ -99,7 +99,7 @@ def has_adjacent_item(position, items_locations):
     :param items_locations: dictionary mapping positions to item names
     :precondition: position must be a tuple of two integers
     :postcondition: correctly identifies if any adjacent position has an item
-    :return: boolean indicating if an adjacent position has an item
+    :return: True if an adjacent position has an item, False otherwise
 
     >>> items = {(1, 1): "Textbook", (3, 3): "Calculator"}
     >>> has_adjacent_item((1, 2), items)
@@ -124,6 +124,20 @@ def has_adjacent_item(position, items_locations):
 
 
 def get_tier_positions(tier):
+    """
+    Get all board positions that belong to a specific tier.
+
+    :param tier: integer representing the tier (0-5)
+    :precondition: tier must be an integer between 0 and 5 inclusive
+    :postcondition: correctly identifies all positions that belong to the specified tier
+    :return: list of tuples containing (column, row) coordinates for the tier
+
+    >>> positions = get_tier_positions(5)  # Goal position
+    >>> positions
+    [(6, 6)]
+    >>> len(get_tier_positions(1)) > 0
+    True
+    """
     tier_positions = []
     for column in range(7):
         for row in range(7):
@@ -135,9 +149,25 @@ def get_tier_positions(tier):
 
 
 def place_tier_items(tier_positions, item_name, item_quantity, items_locations):
+    """
+    Attempts to place items in non-adjacent positions within a tier.
+
+    :param tier_positions: list of tuples containing valid (column, row) positions
+    :param item_name: string name of the item to place
+    :param item_quantity: number of items to place
+    :param items_locations: dictionary to store item positions
+    :precondition: tier_positions must be a list of valid board positions
+    :postcondition: places items in non-adjacent positions within the tier
+    :return: None
+
+    >>> items = {}
+    >>> place_tier_items([(1, 1), (1, 2), (2, 2), (2, 1)], "Textbook", 2, items)
+    >>> len(items) == 2
+    True
+    """
     items_placed = 0
     attempts = 0
-    max_attempts = 69
+    max_attempts = 69 # to prevent infinite loop
 
     while items_placed < item_quantity and attempts < max_attempts and tier_positions:
         position = random.choice(tier_positions)
@@ -151,6 +181,19 @@ def place_tier_items(tier_positions, item_name, item_quantity, items_locations):
 
 
 def add_items_to_board():
+    """
+    Puts the items on the game board.
+
+    :precondition: none
+    :postcondition: creates a dictionary with items placed
+    :return: dictionary mapping (column, row) positions to item names
+
+    >>> items = add_items_to_board()
+    >>> (0, 5) in items and items[(0, 5)] == "Pen and paper"
+    True
+    >>> sum(1 for item in items.values() if item == "Manual") == 3
+    True
+    """
     items_by_tier = {
         0: {"Pen and paper": 1},
         1: {"Textbook": 5},
@@ -795,7 +838,7 @@ def print_item_found(item_name):
 def print_outro(character, victory=True):
     if victory:
         print(f"""
-╔═══════════════════════════════════════════════════���════════════════╗
+╔════════════════════════════════════════════════════════════════════╗
 ║                              VICTORY!                              ║
 ╚════════════════════════════════════════════════════════════════════╝
 
