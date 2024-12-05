@@ -7,11 +7,10 @@ class Test(TestCase):
         """Test generating third term for solvable problem."""
         term1_value = 5.0
         term2_value = 10.0
-        has_solution = True
         expected_value = -15.0
         expected_string = "- 15.00"
         
-        actual_value, actual_string = generate_term3(term1_value, term2_value, has_solution)
+        actual_value, actual_string = generate_term3(term1_value, term2_value)
         
         self.assertEqual(expected_value, actual_value)
         self.assertEqual(expected_string, actual_string)
@@ -20,9 +19,8 @@ class Test(TestCase):
         """Test generating third term for unsolvable problem."""
         term1_value = 5.0
         term2_value = 10.0
-        has_solution = False
         
-        actual_value, actual_string = generate_term3(term1_value, term2_value, has_solution)
+        actual_value, actual_string = generate_term3(term1_value, term2_value)
         
         self.assertEqual(float('inf'), actual_value)
         self.assertEqual("+ 69^420", actual_string)
@@ -31,11 +29,10 @@ class Test(TestCase):
         """Test generating third term that results in zero-sum."""
         term1_value = 5.0
         term2_value = -5.0
-        has_solution = True
         expected_value = 0.0
         expected_string = "+ 0.00"
         
-        actual_value, actual_string = generate_term3(term1_value, term2_value, has_solution)
+        actual_value, actual_string = generate_term3(term1_value, term2_value)
         
         self.assertEqual(expected_value, actual_value)
         self.assertEqual(expected_string, actual_string)
