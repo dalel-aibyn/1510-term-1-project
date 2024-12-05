@@ -7,81 +7,81 @@ class Test(TestCase):
         """Test entrance area positions."""
         expected = 0
         actual = determine_tier(0, 5)
-        self.assertEqual(expected, actual, "Main entrance position")
+        self.assertEqual(expected, actual)
         
         expected = 0
         actual = determine_tier(1, 6)
-        self.assertEqual(expected, actual, "Secondary entrance position")
+        self.assertEqual(expected, actual)
         
     def test_determine_tier_goal_area(self):
         """Test goal position."""
         expected = 5
         actual = determine_tier(6, 6)
-        self.assertEqual(expected, actual, "Goal position at bottom right")
+        self.assertEqual(expected, actual)
         
     def test_determine_tier_arithmetics(self):
         """Test arithmetics area positions."""
         expected = 1
         actual = determine_tier(0, 0)
-        self.assertEqual(expected, actual, "Top left corner of arithmetics")
+        self.assertEqual(expected, actual)
         
         expected = 1
         actual = determine_tier(3, 1)
-        self.assertEqual(expected, actual, "Upper area of arithmetics")
+        self.assertEqual(expected, actual)
         
         expected = 1
         actual = determine_tier(1, 2)
-        self.assertEqual(expected, actual, "Left side of arithmetics")
+        self.assertEqual(expected, actual)
         
         expected = 1
         actual = determine_tier(0, 4)
-        self.assertEqual(expected, actual, "Left column of arithmetics")
+        self.assertEqual(expected, actual)
         
     def test_determine_tier_algebra(self):
         """Test algebra area positions."""
         expected = 2
         actual = determine_tier(4, 1)
-        self.assertEqual(expected, actual, "Upper right of algebra")
+        self.assertEqual(expected, actual)
         
         expected = 2
         actual = determine_tier(2, 2)
-        self.assertEqual(expected, actual, "Middle right of algebra")
+        self.assertEqual(expected, actual)
         
         expected = 2
         actual = determine_tier(3, 3)
-        self.assertEqual(expected, actual, "Center of algebra")
+        self.assertEqual(expected, actual)
         
         expected = 2
         actual = determine_tier(2, 4)
-        self.assertEqual(expected, actual, "Lower middle of algebra")
+        self.assertEqual(expected, actual)
         
     def test_determine_tier_calculus(self):
         """Test calculus area positions."""
         expected = 3
         actual = determine_tier(4, 3)
-        self.assertEqual(expected, actual, "Upper right of calculus")
+        self.assertEqual(expected, actual)
         
         expected = 3
         actual = determine_tier(5, 4)
-        self.assertEqual(expected, actual, "Middle right of calculus")
+        self.assertEqual(expected, actual)
         
         expected = 3
         actual = determine_tier(3, 5)
-        self.assertEqual(expected, actual, "Lower middle of calculus")
+        self.assertEqual(expected, actual)
         
     def test_determine_tier_number_theory(self):
         """Test number theory area positions."""
         expected = 4
         actual = determine_tier(5, 5)
-        self.assertEqual(expected, actual, "Upper right corner of number theory")
+        self.assertEqual(expected, actual)
         
         expected = 4
         actual = determine_tier(4, 6)
-        self.assertEqual(expected, actual, "Lower right of number theory")
+        self.assertEqual(expected, actual)
         
         expected = 4
         actual = determine_tier(5, 6)
-        self.assertEqual(expected, actual, "Bottom right of number theory")
+        self.assertEqual(expected, actual)
         
     def test_determine_tier_invalid_position(self):
         """Test invalid board positions."""
